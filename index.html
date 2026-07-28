@@ -1,0 +1,3446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atlas — Daily Dashboard</title>
+<style>
+:root {
+  --bg: #f5f5f3;
+  --surface: #ffffff;
+  --border: #e8e8e6;
+  --border-light: #f0f0ee;
+  --text-1: #1d1d1f;
+  --text-2: #6e6e73;
+  --text-3: #a1a1a6;
+  --accent: #1d1d1f;
+  --link: #0066cc;
+  --success: #34c759;
+  --danger: #ff3b30;
+  --tag-bg: #f5f5f3;
+  --highlight: #fafaf8;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --radius: 8px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-1);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 40px 32px 60px;
+}
+
+/* ===== Header ===== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 24px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+.header-date {
+  font-size: 12px;
+  color: var(--text-3);
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+.header-title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.header-right {
+  text-align: right;
+}
+.header-meta {
+  font-size: 13px;
+  color: var(--text-2);
+  margin-bottom: 4px;
+}
+.header-updated {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+/* ===== Grid ===== */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-top: 1px solid var(--border);
+}
+.grid-2 > .section {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--border);
+}
+.grid-2 > .section:first-child {
+  padding-right: 28px;
+  border-right: 1px solid var(--border);
+}
+.grid-2 > .section:last-child {
+  padding-left: 28px;
+}
+
+/* ===== Section ===== */
+.section-full {
+  padding: 28px 0;
+  border-bottom: 1px solid var(--border);
+  scroll-margin-top: 56px;
+}
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.section-number {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
+.section-title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.section-meta {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+/* ===== Morning Brief ===== */
+.brief-categories {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 32px;
+}
+.brief-cat-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding-bottom: 10px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--border-light);
+}
+.news-item {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.news-item:last-child {
+  border-bottom: none;
+}
+.news-headline {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+  margin-bottom: 6px;
+}
+.news-line {
+  font-size: 12.5px;
+  color: var(--text-2);
+  line-height: 1.55;
+  margin-bottom: 2px;
+}
+.nl-key {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  width: 48px;
+}
+
+/* Summary */
+.brief-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-top: 20px;
+  padding: 16px 20px;
+  background: var(--highlight);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-light);
+}
+.summary-item {
+  padding-right: 20px;
+}
+.summary-item:last-child {
+  padding-right: 0;
+  padding-left: 20px;
+  border-left: 1px solid var(--border-light);
+}
+.summary-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.summary-label.opp { color: var(--success); }
+.summary-label.risk { color: var(--danger); }
+.summary-text {
+  font-size: 12.5px;
+  color: var(--text-2);
+  line-height: 1.55;
+}
+
+/* ===== Todo ===== */
+.todo-top {
+  background: var(--highlight);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border-light);
+}
+.todo-top-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.todo-top-text {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.todo-list {
+  list-style: none;
+}
+.todo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-light);
+  position: relative;
+}
+.todo-item:last-child {
+  border-bottom: none;
+}
+.todo-item:hover .todo-delete {
+  opacity: 1;
+}
+.checkbox {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid #d1d1d6;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 1px;
+  transition: all 0.15s ease;
+  position: relative;
+}
+.checkbox:hover {
+  border-color: var(--accent);
+}
+.checkbox.checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.checkbox.checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.todo-content {
+  flex: 1;
+  min-width: 0;
+}
+.todo-title {
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+.todo-item.completed .todo-title {
+  color: var(--text-3);
+  text-decoration: line-through;
+}
+.todo-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-2);
+  background: var(--tag-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.todo-delete {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  padding: 2px 4px;
+  opacity: 0;
+  transition: opacity 0.15s ease, color 0.15s ease;
+  flex-shrink: 0;
+}
+.todo-delete:hover {
+  color: var(--danger);
+}
+.todo-add {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  align-items: center;
+}
+.todo-input {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--text-1);
+  background: var(--surface);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.todo-input:focus {
+  border-color: var(--accent);
+}
+.todo-input::placeholder {
+  color: var(--text-3);
+}
+.todo-select {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 8px;
+  font-size: 12px;
+  font-family: var(--font);
+  color: var(--text-2);
+  background: var(--surface);
+  outline: none;
+  cursor: pointer;
+}
+.btn-add {
+  padding: 8px 14px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+}
+.btn-add:hover {
+  opacity: 0.82;
+}
+.todo-empty {
+  font-size: 13px;
+  color: var(--text-3);
+  padding: 12px 0;
+  text-align: center;
+}
+
+/* ===== Workout ===== */
+.workout-streak {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.streak-number {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.streak-label {
+  font-size: 12px;
+  color: var(--text-2);
+}
+.workout-name {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-light);
+}
+.exercise-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-light);
+  font-size: 13px;
+}
+.exercise-item:last-child {
+  border-bottom: none;
+}
+.exercise-name {
+  flex: 1;
+  font-weight: 500;
+}
+.exercise-detail {
+  color: var(--text-2);
+  font-size: 12px;
+}
+.exercise-link {
+  font-size: 11px;
+  color: var(--link);
+  text-decoration: none;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+.exercise-link:hover {
+  border-color: var(--link);
+  background: #f0f5ff;
+}
+.exercise-delete {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.exercise-item:hover .exercise-delete {
+  opacity: 1;
+}
+.exercise-delete:hover {
+  color: var(--danger);
+}
+.workout-add-form {
+  display: none;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.workout-add-form.active {
+  display: flex;
+}
+.workout-add-form input {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-family: var(--font);
+  color: var(--text-1);
+  background: var(--surface);
+  outline: none;
+}
+.workout-add-form input:focus {
+  border-color: var(--accent);
+}
+.workout-add-form input::placeholder {
+  color: var(--text-3);
+}
+.workout-add-form input[name="name"] { flex: 1; min-width: 100px; }
+.workout-add-form input[name="detail"] { width: 90px; }
+.workout-add-form input[name="video"] { width: 120px; }
+.workout-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+.btn-outline {
+  padding: 7px 14px;
+  background: transparent;
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-outline:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.btn-complete {
+  padding: 7px 14px;
+  background: transparent;
+  color: var(--success);
+  border: 1px solid var(--success);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-complete:hover {
+  background: var(--success);
+  color: #fff;
+}
+.btn-complete.done {
+  background: var(--success);
+  color: #fff;
+}
+
+/* ===== Marketing Radar ===== */
+.radar-item {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.radar-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.radar-item:first-child {
+  padding-top: 0;
+}
+.radar-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+  margin-bottom: 8px;
+}
+.radar-platform {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-2);
+  background: var(--tag-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+.radar-insight {
+  font-size: 12.5px;
+  color: var(--text-2);
+  line-height: 1.6;
+  margin-bottom: 3px;
+}
+.ri-key {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  width: 56px;
+}
+
+/* ===== English ===== */
+.english-vocab {
+  margin-bottom: 18px;
+}
+.vocab-item {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+.vocab-item:last-child {
+  border-bottom: none;
+}
+.vocab-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.vocab-phrase {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.vocab-translation {
+  font-size: 12.5px;
+  color: var(--text-2);
+  margin-bottom: 2px;
+}
+.vocab-example {
+  font-size: 12px;
+  color: var(--text-3);
+  font-style: italic;
+  line-height: 1.5;
+}
+.interview-block {
+  margin-top: 16px;
+  padding: 16px;
+  background: var(--highlight);
+  border-radius: var(--radius);
+  border: 1px solid var(--border-light);
+}
+.interview-cat {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--link);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.interview-q {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+.interview-a-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.interview-a {
+  font-size: 12.5px;
+  color: var(--text-2);
+  line-height: 1.65;
+  margin-bottom: 10px;
+}
+.interview-followup {
+  font-size: 12px;
+  color: var(--text-2);
+  padding-top: 10px;
+  border-top: 1px solid var(--border-light);
+}
+.interview-followup strong {
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+/* ===== Footer ===== */
+.footer {
+  text-align: center;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+
+/* ===== Tab Nav ===== */
+.tab-nav { display: flex; gap: 0; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+.tab-btn { padding: 8px 16px; background: none; border: none; border-bottom: 2px solid transparent; font-size: 13px; font-weight: 500; color: var(--text-2); font-family: var(--font); cursor: pointer; transition: all 0.15s ease; margin-bottom: -1px; }
+.tab-btn:hover { color: var(--text-1); }
+.tab-btn.active { color: var(--text-1); border-bottom-color: var(--accent); font-weight: 600; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ===== Modal ===== */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); z-index: 1000; align-items: center; justify-content: center; }
+.modal-overlay.active { display: flex; }
+.modal { background: var(--surface); border-radius: 12px; padding: 24px; width: 90%; max-width: 480px; max-height: 85vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+.modal-title { font-size: 15px; font-weight: 700; margin-bottom: 16px; }
+.modal-close { float: right; background: none; border: none; font-size: 18px; color: var(--text-3); cursor: pointer; line-height: 1; }
+.modal-close:hover { color: var(--text-1); }
+
+/* ===== Form ===== */
+.form-group { margin-bottom: 12px; }
+.form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-2); margin-bottom: 4px; }
+.form-input, .form-select, .form-textarea { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 8px 10px; font-size: 13px; font-family: var(--font); color: var(--text-1); background: var(--surface); outline: none; transition: border-color 0.15s ease; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--accent); }
+.form-textarea { resize: vertical; min-height: 60px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+/* ===== Streak Badge ===== */
+.streak-badge { display: inline-flex; align-items: baseline; gap: 6px; padding: 6px 14px; background: var(--highlight); border-radius: var(--radius); border: 1px solid var(--border-light); margin-bottom: 16px; }
+.streak-badge-num { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.streak-badge-label { font-size: 12px; color: var(--text-2); }
+
+/* ===== Training Cards ===== */
+.training-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.training-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; transition: border-color 0.15s ease; }
+.training-card:hover { border-color: var(--text-3); }
+.tc-name { font-size: 13.5px; font-weight: 600; margin-bottom: 6px; line-height: 1.4; }
+.tc-meta { font-size: 11.5px; color: var(--text-2); margin-bottom: 2px; }
+.tc-platform { display: inline-block; font-size: 10px; font-weight: 600; color: var(--text-2); background: var(--tag-bg); padding: 2px 6px; border-radius: 3px; margin-bottom: 8px; }
+.tc-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+.tc-btn { font-size: 11px; padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; background: none; color: var(--text-2); cursor: pointer; font-family: var(--font); transition: all 0.15s ease; text-decoration: none; }
+.tc-btn:hover { border-color: var(--accent); color: var(--accent); }
+.tc-btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+.tc-schedule-inline { margin-top: 8px; display: none; gap: 6px; align-items: center; flex-wrap: wrap; }
+.tc-schedule-inline.active { display: flex; }
+.tc-schedule-inline input, .tc-schedule-inline select { font-size: 12px; padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; font-family: var(--font); }
+
+/* ===== Today Training ===== */
+.today-training { border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; }
+.tt-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.tt-name { font-size: 14px; font-weight: 600; }
+.tt-status { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 3px; }
+.tt-status.pending { color: var(--text-2); background: var(--tag-bg); }
+.tt-status.done { color: #fff; background: var(--success); }
+.tt-info { font-size: 12px; color: var(--text-2); margin-bottom: 2px; }
+.tt-info-label { display: inline-block; font-size: 10px; font-weight: 700; color: var(--text-3); width: 56px; }
+.tt-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+/* ===== Weekly Schedule ===== */
+.week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
+.week-day { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px; min-height: 120px; }
+.week-day.today { border-color: var(--accent); border-width: 2px; }
+.week-day-label { font-size: 11px; font-weight: 600; color: var(--text-2); margin-bottom: 2px; }
+.week-day-date { font-size: 10px; color: var(--text-3); margin-bottom: 8px; }
+.week-training { font-size: 11px; padding: 4px 6px; background: var(--highlight); border-radius: 4px; margin-bottom: 4px; position: relative; }
+.week-training.done { opacity: 0.5; text-decoration: line-through; }
+.wt-name { font-weight: 500; margin-bottom: 2px; }
+.wt-actions { display: flex; gap: 4px; }
+.wt-btn { font-size: 10px; padding: 1px 5px; border: 1px solid var(--border); border-radius: 3px; background: none; color: var(--text-3); cursor: pointer; font-family: var(--font); }
+.wt-btn:hover { color: var(--accent); border-color: var(--accent); }
+.wt-btn.danger:hover { color: var(--danger); border-color: var(--danger); }
+.wt-add-btn { font-size: 10px; color: var(--text-3); cursor: pointer; font-family: var(--font); background: none; border: 1px dashed var(--border); border-radius: 4px; padding: 4px 6px; width: 100%; }
+.wt-add-btn:hover { color: var(--accent); border-color: var(--accent); }
+.week-progress { font-size: 12px; color: var(--text-2); margin-bottom: 12px; }
+.week-progress-bar { height: 4px; background: var(--border-light); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.week-progress-fill { height: 100%; background: var(--success); border-radius: 2px; transition: width 0.3s ease; }
+
+/* ===== Empty State ===== */
+.empty-state { text-align: center; padding: 32px 20px; }
+.empty-state-text { font-size: 13px; color: var(--text-3); margin-bottom: 12px; }
+
+/* ===== Radar Trend ===== */
+.trend-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 12px; }
+.trend-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.trend-name { font-size: 14px; font-weight: 600; line-height: 1.4; }
+.trend-tag { font-size: 10px; font-weight: 600; color: var(--text-2); background: var(--tag-bg); padding: 2px 8px; border-radius: 3px; white-space: nowrap; margin-left: 8px; }
+.trend-heat { font-size: 11px; color: var(--text-3); margin-bottom: 8px; }
+.trend-detail { font-size: 12.5px; color: var(--text-2); line-height: 1.6; margin-bottom: 3px; }
+.td-key { display: inline-block; font-size: 10px; font-weight: 700; color: var(--text-3); letter-spacing: 0.03em; width: 76px; vertical-align: top; }
+.td-val { display: inline-block; width: calc(100% - 80px); }
+.platform-observation { margin-top: 16px; padding: 16px 20px; background: var(--highlight); border-radius: var(--radius); border: 1px solid var(--border-light); }
+.po-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+.po-item { font-size: 12.5px; color: var(--text-2); line-height: 1.6; margin-bottom: 4px; }
+.po-key { display: inline-block; font-size: 10px; font-weight: 700; color: var(--text-3); width: 90px; vertical-align: top; }
+
+/* ===== English Coach ===== */
+.eng-section { margin-bottom: 24px; }
+.eng-section-title { font-size: 12px; font-weight: 700; color: var(--text-3); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border-light); }
+.vocab-row { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border-light); }
+.vocab-row:last-child { border-bottom: none; }
+.vocab-content { flex: 1; }
+.vocab-phrase { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 2px; }
+.vocab-cn { font-size: 12.5px; color: var(--text-2); margin-bottom: 2px; }
+.vocab-eg { font-size: 12px; color: var(--text-3); font-style: italic; line-height: 1.5; }
+.collect-btn { background: none; border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; font-size: 11px; color: var(--text-3); cursor: pointer; font-family: var(--font); transition: all 0.15s ease; opacity: 0; flex-shrink: 0; }
+.vocab-row:hover .collect-btn, .dialogue-text:hover .collect-btn { opacity: 1; }
+.collect-btn:hover { border-color: var(--accent); color: var(--accent); }
+.collect-btn.collected { opacity: 1; color: var(--success); border-color: var(--success); }
+@media (hover: none) { .collect-btn { opacity: 0.4; } }
+
+.interview-question { padding: 14px 16px; background: var(--highlight); border-radius: var(--radius); border: 1px solid var(--border-light); margin-bottom: 16px; }
+.iq-en { font-size: 14px; font-weight: 600; line-height: 1.5; margin-bottom: 4px; }
+.iq-cn { font-size: 12.5px; color: var(--text-2); margin-bottom: 10px; }
+.iq-analysis { font-size: 12px; color: var(--text-2); line-height: 1.6; padding-top: 10px; border-top: 1px solid var(--border-light); }
+.iq-analysis-item { margin-bottom: 3px; }
+.ia-key { display: inline-block; font-size: 10px; font-weight: 700; color: var(--text-3); width: 70px; vertical-align: top; }
+
+.dialogue-round { margin-bottom: 16px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.dr-header { padding: 8px 14px; background: var(--highlight); border-bottom: 1px solid var(--border-light); font-size: 12px; font-weight: 700; color: var(--text-2); }
+.dr-content { padding: 12px 14px; }
+.dialogue-text { position: relative; padding: 8px 0; border-bottom: 1px solid var(--border-light); }
+.dialogue-text:last-child { border-bottom: none; }
+.dt-label { font-size: 10px; font-weight: 700; color: var(--text-3); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 2px; }
+.dt-en { font-size: 13px; line-height: 1.6; margin-bottom: 2px; }
+.dt-cn { font-size: 12px; color: var(--text-2); line-height: 1.55; }
+.dt-analysis { font-size: 11.5px; color: var(--text-3); margin-top: 4px; font-style: italic; }
+
+.framework-box { padding: 14px 16px; background: var(--highlight); border-radius: var(--radius); border: 1px solid var(--border-light); }
+.framework-flow { font-size: 12.5px; color: var(--text-2); line-height: 1.8; margin-top: 6px; }
+.replaceable-list { font-size: 12.5px; color: var(--text-2); line-height: 1.7; margin-top: 6px; }
+.replaceable-list li { margin-bottom: 3px; margin-left: 16px; }
+
+.evaluation-box { padding: 14px 16px; border: 1px solid var(--border); border-radius: var(--radius); }
+.eval-item { font-size: 12.5px; color: var(--text-2); line-height: 1.6; margin-bottom: 4px; }
+.eval-key { display: inline-block; font-size: 10px; font-weight: 700; width: 70px; vertical-align: top; }
+.eval-key.pos { color: var(--success); }
+.eval-key.neg { color: var(--danger); }
+
+.my-answer-textarea { width: 100%; border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; font-size: 13px; font-family: var(--font); color: var(--text-1); background: var(--surface); outline: none; min-height: 100px; resize: vertical; transition: border-color 0.15s ease; }
+.my-answer-textarea:focus { border-color: var(--accent); }
+.my-answer-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.compare-box { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+.compare-col { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px; }
+.compare-label { font-size: 10px; font-weight: 700; color: var(--text-3); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }
+.compare-text { font-size: 12.5px; line-height: 1.6; color: var(--text-2); }
+
+/* ===== Favorites Panel ===== */
+.fav-backdrop { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.2); z-index: 1000; }
+.fav-backdrop.active { display: block; }
+.fav-panel { display: none; position: fixed; top: 0; right: 0; width: 360px; height: 100vh; background: var(--surface); border-left: 1px solid var(--border); z-index: 1001; overflow-y: auto; box-shadow: -4px 0 24px rgba(0,0,0,0.08); }
+.fav-panel.active { display: block; }
+.fav-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--surface); z-index: 1; }
+.fav-title { font-size: 14px; font-weight: 700; }
+.fav-search { margin: 12px 20px; width: calc(100% - 40px); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; font-size: 13px; font-family: var(--font); outline: none; }
+.fav-search:focus { border-color: var(--accent); }
+.fav-list { padding: 0 20px 20px; }
+.fav-item { padding: 10px 0; border-bottom: 1px solid var(--border-light); }
+.fav-item-en { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.fav-item-cn { font-size: 12px; color: var(--text-2); margin-bottom: 2px; }
+.fav-item-meta { font-size: 11px; color: var(--text-3); }
+.fav-item-actions { display: flex; gap: 6px; margin-top: 4px; }
+.fav-action { font-size: 11px; padding: 2px 8px; border: 1px solid var(--border); border-radius: 4px; background: none; color: var(--text-2); cursor: pointer; font-family: var(--font); }
+.fav-action:hover { border-color: var(--accent); color: var(--accent); }
+.fav-item.mastered .fav-item-en { color: var(--text-3); text-decoration: line-through; }
+.fav-empty { font-size: 13px; color: var(--text-3); text-align: center; padding: 40px 20px; }
+
+/* ===== Finance ===== */
+.fin-overview { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 16px; }
+.fin-ov-cell { padding: 14px 16px; border-right: 1px solid var(--border-light); }
+.fin-ov-cell:last-child { border-right: none; }
+.fin-ov-label { font-size: 10px; font-weight: 700; color: var(--text-3); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+.fin-ov-value { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.fin-ov-sub { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+.fin-up { color: #d63030; }
+.fin-down { color: #00875a; }
+.fin-flat { color: var(--text-2); }
+.fin-alert { padding: 12px 16px; border: 1px solid var(--border); border-left: 3px solid var(--text-1); border-radius: var(--radius); margin-bottom: 10px; font-size: 12.5px; color: var(--text-2); }
+.fin-alert-label { font-size: 10px; font-weight: 700; color: var(--text-3); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; display: block; }
+.fin-updated { font-size: 11px; color: var(--text-3); margin-top: 12px; display: flex; align-items: center; gap: 8px; }
+.fin-refresh-btn { font-size: 11px; padding: 3px 10px; border: 1px solid var(--border); border-radius: 4px; background: none; color: var(--text-2); cursor: pointer; font-family: var(--font); }
+.fin-refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.fund-list { }
+.fund-row { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; transition: border-color 0.15s ease; }
+.fund-row:hover { border-color: var(--text-3); }
+.fund-row-header { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; }
+.fund-name { font-size: 13.5px; font-weight: 600; flex: 1; }
+.fund-code { font-size: 11px; color: var(--text-3); font-variant-numeric: tabular-nums; }
+.fund-nav { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.fund-change { font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; min-width: 60px; text-align: right; }
+.fund-expand { font-size: 11px; color: var(--text-3); transition: transform 0.2s ease; }
+.fund-row.expanded .fund-expand { transform: rotate(180deg); }
+.fund-detail { display: none; padding: 0 14px 14px; border-top: 1px solid var(--border-light); }
+.fund-row.expanded .fund-detail { display: block; }
+.fund-info-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px 20px; margin: 12px 0; }
+.fi-item { font-size: 12px; }
+.fi-label { color: var(--text-3); font-size: 10px; font-weight: 600; letter-spacing: 0.04em; }
+.fi-value { color: var(--text-1); margin-top: 1px; }
+.fund-tag { display: inline-block; font-size: 10px; font-weight: 600; color: var(--text-2); background: var(--tag-bg); padding: 2px 6px; border-radius: 3px; margin-left: 4px; }
+.fund-status-tag { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 6px; border-radius: 3px; }
+.fund-status-tag.hold { color: #0066cc; background: #f0f5ff; }
+.fund-status-tag.watch { color: var(--text-2); background: var(--tag-bg); }
+.fund-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.fund-actions .btn-outline { font-size: 11px; padding: 5px 10px; }
+.fund-link { font-size: 11px; color: var(--link); text-decoration: none; padding: 5px 10px; border: 1px solid var(--border); border-radius: 4px; }
+.fund-link:hover { border-color: var(--link); background: #f0f5ff; }
+
+.fund-analysis { padding: 10px 0; border-top: 1px solid var(--border-light); margin-top: 8px; }
+.fa-label { font-size: 10px; font-weight: 700; color: var(--text-3); letter-spacing: 0.05em; margin-bottom: 4px; }
+.fa-text { font-size: 12px; color: var(--text-2); line-height: 1.6; margin-bottom: 8px; }
+.fa-source { font-size: 10px; color: var(--text-3); }
+
+.fund-holdings { margin-top: 8px; }
+.holding-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px; border-bottom: 1px solid var(--border-light); }
+.holding-row:last-child { border-bottom: none; }
+.holding-name { color: var(--text-1); }
+.holding-pct { color: var(--text-2); font-variant-numeric: tabular-nums; }
+
+.fund-custom-note { margin-top: 10px; padding: 10px; background: var(--highlight); border-radius: 6px; border: 1px solid var(--border-light); }
+.fcn-label { font-size: 10px; font-weight: 700; color: var(--text-3); letter-spacing: 0.05em; margin-bottom: 4px; }
+.fcn-textarea { width: 100%; border: 1px solid var(--border); border-radius: 4px; padding: 6px 8px; font-size: 12px; font-family: var(--font); outline: none; resize: vertical; min-height: 40px; background: var(--surface); }
+.fcn-textarea:focus { border-color: var(--accent); }
+
+/* Overlap Analysis */
+.overlap-section { margin-bottom: 20px; }
+.overlap-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+.overlap-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; margin-bottom: 10px; }
+.oc-pair { font-size: 12.5px; font-weight: 600; margin-bottom: 8px; }
+.oc-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 3px; margin-left: 6px; }
+.oc-badge.high { color: #d63030; background: #fff0f0; }
+.oc-badge.mid { color: #b8860b; background: #fffbe6; }
+.oc-badge.low { color: #00875a; background: #f0fff4; }
+.oc-detail { font-size: 12px; color: var(--text-2); line-height: 1.6; }
+.oc-detail-row { margin-bottom: 3px; }
+.oc-key { display: inline-block; font-size: 10px; font-weight: 700; color: var(--text-3); width: 80px; }
+.exposure-list { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; margin-top: 8px; }
+.exp-item { font-size: 12px; display: flex; align-items: center; gap: 6px; }
+.exp-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.exp-dot.high { background: #d63030; }
+.exp-dot.mid { background: #b8860b; }
+.exp-dot.low { background: #00875a; }
+
+/* News */
+.news-filter { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.news-filter-btn { font-size: 11px; padding: 4px 10px; border: 1px solid var(--border); border-radius: 4px; background: none; color: var(--text-2); cursor: pointer; font-family: var(--font); }
+.news-filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+.news-filter-btn:hover:not(.active) { border-color: var(--accent); }
+.fin-news-item { padding: 12px 0; border-bottom: 1px solid var(--border-light); }
+.fin-news-item:last-child { border-bottom: none; }
+.fn-headline { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.fn-meta { font-size: 11px; color: var(--text-3); margin-bottom: 6px; display: flex; gap: 8px; flex-wrap: wrap; }
+.fn-impact { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 3px; }
+.fn-impact.pos { color: #d63030; background: #fff0f0; }
+.fn-impact.neg { color: #00875a; background: #f0fff4; }
+.fn-impact.neu { color: var(--text-2); background: var(--tag-bg); }
+.fn-impact.short { color: var(--text-2); background: var(--tag-bg); }
+.fn-impact.mid { color: #b8860b; background: #fffbe6; }
+.fn-detail { font-size: 12px; color: var(--text-2); line-height: 1.6; }
+.fn-related { font-size: 11px; color: var(--text-3); margin-top: 4px; }
+.fn-source { font-size: 10px; color: var(--text-3); margin-top: 4px; }
+
+/* Records */
+.record-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.record-table th { text-align: left; font-size: 10px; font-weight: 700; color: var(--text-3); letter-spacing: 0.05em; text-transform: uppercase; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+.record-table td { padding: 10px; border-bottom: 1px solid var(--border-light); }
+.record-table tr:hover { background: var(--highlight); }
+.record-action { font-size: 11px; color: var(--link); cursor: pointer; }
+.record-action:hover { text-decoration: underline; }
+.record-empty { font-size: 13px; color: var(--text-3); text-align: center; padding: 40px 20px; }
+
+/* Position Modal */
+.fin-modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.3); z-index: 1000; align-items: center; justify-content: center; }
+.fin-modal-overlay.active { display: flex; }
+.fin-modal { background: var(--surface); border-radius: 12px; padding: 24px; width: 90%; max-width: 520px; max-height: 85vh; overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.12); }
+
+/* Fund Add */
+.fin-add-btn { margin-bottom: 14px; }
+
+/* ===== Nav Bar ===== */
+.nav-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(245, 245, 243, 0.92);
+  backdrop-filter: saturate(180%) blur(12px);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  border-bottom: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  margin: 0 -32px 28px;
+  padding: 0 32px;
+}
+.nav-list {
+  display: flex;
+  gap: 0;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.nav-list::-webkit-scrollbar { display: none; }
+.nav-item {
+  flex-shrink: 0;
+  padding: 11px 16px;
+  font-size: 12.5px;
+  color: var(--text-2);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  user-select: none;
+  text-decoration: none;
+}
+.nav-item:first-child { padding-left: 0; }
+.nav-item:hover { color: var(--text-1); }
+.nav-item.active {
+  color: var(--text-1);
+  border-bottom-color: var(--text-1);
+  font-weight: 600;
+}
+.nav-item-num {
+  font-size: 10px;
+  color: var(--text-3);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.nav-item.active .nav-item-num { color: var(--text-1); }
+
+/* ===== Font Size Control ===== */
+.font-control {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 9999;
+}
+.fc-toggle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-1);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  transition: box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.fc-toggle:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+.fc-toggle:active { transform: scale(0.92); }
+.fc-panel {
+  display: none;
+  position: absolute;
+  bottom: 50px;
+  right: 0;
+  width: 220px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+.fc-panel.open { display: block; }
+.fc-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.fc-label-text {
+  font-size: 12px;
+  color: var(--text-2);
+  font-weight: 500;
+}
+.fc-value {
+  font-size: 13px;
+  color: var(--text-1);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.fc-slider {
+  width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+  outline: none;
+  margin-bottom: 12px;
+}
+.fc-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--text-1);
+  cursor: pointer;
+}
+.fc-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--text-1);
+  cursor: pointer;
+  border: none;
+}
+.fc-reset {
+  width: 100%;
+  padding: 7px;
+  font-size: 12px;
+  color: var(--text-2);
+  background: var(--tag-bg);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.fc-reset:hover { background: var(--border); }
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .app { padding: 24px 16px 40px; }
+  .nav-bar { margin: 0 -16px 20px; padding: 0 16px; }
+  .nav-item { padding: 10px 12px; font-size: 12px; }
+  .header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .header-right { text-align: left; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-2 > .section:first-child {
+    padding-right: 0;
+    border-right: none;
+  }
+  .grid-2 > .section:last-child {
+    padding-left: 0;
+  }
+  .brief-categories { grid-template-columns: 1fr; gap: 0; }
+  .brief-summary { grid-template-columns: 1fr; }
+  .summary-item:last-child {
+    padding-left: 0;
+    border-left: none;
+    border-top: 1px solid var(--border-light);
+    padding-top: 12px;
+    margin-top: 12px;
+  }
+  .week-grid { grid-template-columns: 1fr; }
+  .training-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .fav-panel { width: 100%; }
+  .compare-box { grid-template-columns: 1fr; }
+  .fin-overview { grid-template-columns: 1fr; }
+  .fin-ov-cell { border-right: none; border-bottom: 1px solid var(--border-light); }
+  .fin-ov-cell:last-child { border-bottom: none; }
+  .fund-info-grid { grid-template-columns: 1fr 1fr; }
+  .exposure-list { grid-template-columns: 1fr; }
+  .fund-row-header { flex-wrap: wrap; }
+  .td-key, .po-key, .ia-key, .eval-key { width: auto; display: block; margin-bottom: 2px; }
+  .td-val { width: auto; display: block; }
+  .font-control { right: 14px; bottom: 14px; }
+}
+</style>
+</head>
+<body>
+<script>try{var s=parseInt(localStorage.getItem('atlas-font-scale')||'100',10);if(s!==100){document.body.style.zoom=s/100;}}catch(e){}</script>
+<div class="app">
+
+  <!-- ===== Header ===== -->
+  <header class="header">
+    <div>
+      <div class="header-date">2026.07.28 — Tuesday</div>
+      <h1 class="header-title">Atlas</h1>
+    </div>
+    <div class="header-right">
+      <div class="header-meta">A股大跌 · 油价暴跌 9% · 黄金新高</div>
+      <div class="header-updated">Last updated 15:27 · Auto-refreshed daily</div>
+    </div>
+  </header>
+
+  <!-- ===== Nav Bar ===== -->
+  <nav class="nav-bar">
+    <ul class="nav-list">
+      <li><a class="nav-item active" href="#sec-01" data-target="sec-01"><span class="nav-item-num">01</span>Morning Brief</a></li>
+      <li><a class="nav-item" href="#sec-02" data-target="sec-02"><span class="nav-item-num">02</span>Todo</a></li>
+      <li><a class="nav-item" href="#sec-03" data-target="sec-03"><span class="nav-item-num">03</span>今日运动</a></li>
+      <li><a class="nav-item" href="#sec-04" data-target="sec-04"><span class="nav-item-num">04</span>热点雷达</a></li>
+      <li><a class="nav-item" href="#sec-05" data-target="sec-05"><span class="nav-item-num">05</span>English Coach</a></li>
+      <li><a class="nav-item" href="#sec-06" data-target="sec-06"><span class="nav-item-num">06</span>理财观察</a></li>
+    </ul>
+  </nav>
+
+  <!-- ===== 01 Morning Brief ===== -->
+  <section class="section-full" id="sec-01">
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <span class="section-title">Morning Brief</span>
+      <span class="section-meta">Past 24 hours</span>
+    </div>
+
+    <div class="brief-categories">
+      <!-- China -->
+      <div>
+        <div class="brief-cat-label">China</div>
+
+        <div class="news-item">
+          <div class="news-headline">长鑫科技上市首日成交超 1400 亿，市值破 3 万亿登顶 A 股</div>
+          <div class="news-line"><span class="nl-key">What</span>国产存储龙头登陆科创板，创 A 股单日成交纪录。</div>
+          <div class="news-line"><span class="nl-key">Why</span>半导体国产替代进入资本市场验证阶段，标志性事件。</div>
+          <div class="news-line"><span class="nl-key">Impact</span>产业链关注度提升，但首日暴涨后短期波动风险大，不宜追高。</div>
+          <div class="news-line"><span class="nl-key">Watch</span>长鑫产能爬坡节奏、存储芯片价格周期。</div>
+        </div>
+
+        <div class="news-item">
+          <div class="news-headline">商务部回应美国拟制裁中国 AI 企业：敦促美方纠正霸权思维</div>
+          <div class="news-line"><span class="nl-key">What</span>美方拟调查制裁中国 AI 企业，商务部称美企也在蒸馏中国模型。</div>
+          <div class="news-line"><span class="nl-key">Why</span>中美 AI 竞争从技术层面升级到政策博弈。</div>
+          <div class="news-line"><span class="nl-key">Impact</span>AI 出海短期承压，国产替代逻辑加强。对 DearDay 等产品需关注合规边界。</div>
+          <div class="news-line"><span class="nl-key">Watch</span>美方具体制裁清单及中方反制措施。</div>
+        </div>
+      </div>
+
+      <!-- International -->
+      <div>
+        <div class="brief-cat-label">International</div>
+
+        <div class="news-item">
+          <div class="news-headline">日本九州 6.8 级地震，熊本大面积停电、购物中心坍塌</div>
+          <div class="news-line"><span class="nl-key">What</span>震源深度 10km，超 4.8 万户停电，至少 50 人送医。</div>
+          <div class="news-line"><span class="nl-key">Why</span>九州是日本半导体重镇（索尼、台积电工厂集中），可能冲击全球供应链。</div>
+          <div class="news-line"><span class="nl-key">Impact</span>叠加韩国暴跌，亚洲半导体短期承压。关注供应链替代机会。</div>
+          <div class="news-line"><span class="nl-key">Watch</span>工厂受损评估、海啸预警后续。</div>
+        </div>
+
+        <div class="news-item">
+          <div class="news-headline">特朗普称与伊朗谈判中（伊朗否认），油价暴跌近 9%</div>
+          <div class="news-line"><span class="nl-key">What</span>美伊互相军事打击暂停，地缘风险溢价回吐，布伦特原油跌 8.7%。</div>
+          <div class="news-line"><span class="nl-key">Why</span>中东局势直接关系全球能源价格与通胀预期。</div>
+          <div class="news-line"><span class="nl-key">Impact</span>油价下跌利好航空、物流；黄金避险需求仍在。谈判破裂风险不可忽视。</div>
+          <div class="news-line"><span class="nl-key">Watch</span>美伊谈判进展、霍尔木兹海峡通航状态。</div>
+        </div>
+      </div>
+
+      <!-- Finance -->
+      <div>
+        <div class="brief-cat-label">Finance</div>
+
+        <div class="news-item">
+          <div class="news-headline">A 股大跌创业板跌 7.35%，日韩股市触发熔断</div>
+          <div class="news-line"><span class="nl-key">What</span>创业板 -7.35%，深成指 -4.52%，沪深300 -2.83%。韩国 KOSPI -6.9% 触发 SIDECAR。</div>
+          <div class="news-line"><span class="nl-key">Why</span>科技股前期涨幅过大 + 半导体周期见顶信号 + 地震冲击三重叠加。</div>
+          <div class="news-line"><span class="nl-key">Impact</span>短期不宜追涨杀跌。SK 海力士跌破 IPO 价，存储芯片周期拐点信号明确。</div>
+          <div class="news-line"><span class="nl-key">Watch</span>创业板能否企稳、半导体板块资金流向。</div>
+        </div>
+
+        <div class="news-item">
+          <div class="news-headline">苹果市值逼近 5 万亿重回全球第一，黄金创新高</div>
+          <div class="news-line"><span class="nl-key">What</span>苹果涨超 1% 创新高；现货黄金 4077 美元/盎司；离岸人民币涨至 6.7655。</div>
+          <div class="news-line"><span class="nl-key">Why</span>资金从 AI 概念向消费龙头轮动，避险需求持续。</div>
+          <div class="news-line"><span class="nl-key">Impact</span>英伟达跌 5%，AI 概念短期降温。人民币走强利好港股和进口链。</div>
+          <div class="news-line"><span class="nl-key">Watch</span>本周美联储议息会议、苹果 Q3 财报。</div>
+        </div>
+      </div>
+
+      <!-- AI -->
+      <div>
+        <div class="brief-cat-label">AI</div>
+
+        <div class="news-item">
+          <div class="news-headline">阿里"千问办公"测试，AI 办公 Agent 竞争白热化</div>
+          <div class="news-line"><span class="nl-key">What</span>阿里整合多款 Agent 产品推出"千问办公"；同期 WorkBuddy 上架鸿蒙，美团小团升级 2.0。</div>
+          <div class="news-line"><span class="nl-key">Why</span>AI 办公从对话工具转向可执行智能体，大厂集中资源争夺生产力入口。</div>
+          <div class="news-line"><span class="nl-key">Impact</span>对 DearDay 定位有直接参考——差异化在个人化和简洁，不在功能堆叠。</div>
+          <div class="news-line"><span class="nl-key">Watch</span>千问办公正式发布时间、各 Agent 功能差异对比。</div>
+        </div>
+
+        <div class="news-item">
+          <div class="news-headline">WAIC 2026 落幕：AI 进入智能体工业化落地周期</div>
+          <div class="news-line"><span class="nl-key">What</span>1100+ 企业参展，核心信号：参数竞赛终结，转向"能落地、提效益、算清回报"。</div>
+          <div class="news-line"><span class="nl-key">Why</span>AI 从技术驱动转向场景驱动，机会在应用层而非模型层。</div>
+          <div class="news-line"><span class="nl-key">Impact</span>DearDay 定位符合趋势。求职关注 Agent 交互设计能力，这是核心稀缺技能。</div>
+          <div class="news-line"><span class="nl-key">Watch</span>具身智能落地验证窗口（2026 底—2027 底）。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="brief-summary">
+      <div class="summary-item">
+        <div class="summary-label opp">Today's Opportunity</div>
+        <div class="summary-text">AI Agent 工业化落地周期开启，应用层创业窗口打开。油价暴跌 + 人民币走强利好进口链和港股。长鑫上市标志国产替代加速，半导体长期逻辑不变。</div>
+      </div>
+      <div class="summary-item">
+        <div class="summary-label risk">Today's Risk</div>
+        <div class="summary-text">全球半导体周期见顶信号明确（韩国熔断、SK 海力士破发）+ 日本地震冲击供应链。美伊谈判若破裂，油价可能快速反弹。短期科技股波动加剧。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 02 Today's Todo ===== -->
+  <section class="section-full" id="sec-02">
+    <div class="section-header">
+      <span class="section-number">02</span>
+      <span class="section-title">Today's Todo</span>
+      <span class="section-meta" id="todo-count"></span>
+    </div>
+
+    <div class="todo-top">
+      <div class="todo-top-label">Most Important</div>
+      <div class="todo-top-text">完成 DearDay Dashboard 数据自动化方案设计</div>
+    </div>
+
+    <ul class="todo-list" id="todo-list"></ul>
+
+    <div class="todo-add">
+      <input type="text" class="todo-input" id="todo-input" placeholder="Add a task..." />
+      <select class="todo-select" id="todo-project">
+        <option value="DearDay">DearDay</option>
+        <option value="求职">Career</option>
+        <option value="学习">Learning</option>
+        <option value="健身">Fitness</option>
+        <option value="生活">Life</option>
+      </select>
+      <button class="btn-add" onclick="addTodo()">Add</button>
+    </div>
+  </section>
+
+  <!-- ===== 03 今日运动 ===== -->
+  <section class="section-full" id="sec-03">
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <span class="section-title">今日运动</span>
+      <span class="section-meta" id="workout-date-label"></span>
+    </div>
+
+    <div class="streak-badge">
+      <span class="streak-badge-num" id="streak-num">0</span>
+      <span class="streak-badge-label">连续运动天数</span>
+    </div>
+
+    <div class="tab-nav" id="workout-tabs">
+      <button class="tab-btn active" data-tab="today">今日训练</button>
+      <button class="tab-btn" data-tab="library">训练库</button>
+      <button class="tab-btn" data-tab="week">本周计划</button>
+    </div>
+
+    <div class="tab-panel active" data-panel="today" id="tab-today">
+      <div id="today-training-list"></div>
+    </div>
+
+    <div class="tab-panel" data-panel="library" id="tab-library">
+      <div style="margin-bottom: 14px;">
+        <button class="btn-outline" onclick="openTrainingModal()">添加训练</button>
+      </div>
+      <div class="training-grid" id="library-grid"></div>
+    </div>
+
+    <div class="tab-panel" data-panel="week" id="tab-week">
+      <div class="week-progress" id="week-progress"></div>
+      <div class="week-grid" id="week-grid"></div>
+    </div>
+  </section>
+
+  <!-- ===== 04 热点雷达 ===== -->
+  <section class="section-full" id="sec-04">
+    <div class="section-header">
+      <span class="section-number">04</span>
+      <span class="section-title">热点雷达</span>
+      <span class="section-meta">培养营销敏感度</span>
+    </div>
+
+    <div class="tab-nav" id="radar-tabs">
+      <button class="tab-btn active" data-tab="xhs">小红书</button>
+      <button class="tab-btn" data-tab="dy">抖音</button>
+    </div>
+
+    <!-- 小红书热点 -->
+    <div class="tab-panel active" data-panel="xhs">
+      <div class="trend-card">
+        <div class="trend-header"><span class="trend-name">"Gap Day" 碎片化休息法</span><span class="trend-tag">职场 / 生活方式</span></div>
+        <div class="trend-heat">热度：上升期，近 7 天搜索量增长 340%</div>
+        <div class="trend-detail"><span class="td-key">内容形式</span><span class="td-val">图文笔记，封面为"一个人 Gap Day 做的 5 件小事"，清单体为主</span></div>
+        <div class="trend-detail"><span class="td-key">为什么火</span><span class="td-val">年轻人压力大但没时间长途旅行，需要被正当化的短时休息。"Gap Day"比"Gap Year"更可执行</span></div>
+        <div class="trend-detail"><span class="td-key">用户心理</span><span class="td-val">提供了"可执行的休息清单"，有收藏价值，转发给朋友约着一起</span></div>
+        <div class="trend-detail"><span class="td-key">常见标题</span><span class="td-val">"打工人的 Gap Day 指南"/"不上班的 24 小时怎么过"/"月薪 8K 也配拥有的 Gap Day"</span></div>
+        <div class="trend-detail"><span class="td-key">适合账号</span><span class="td-val">生活方式、职场、心理健康、城市探店</span></div>
+        <div class="trend-detail"><span class="td-key">品牌借鉴</span><span class="td-val">快消品牌可关联"休息场景"做内容植入，如咖啡品牌做"Gap Day 咖啡地图"</span></div>
+        <div class="trend-detail"><span class="td-key">持续多久</span><span class="td-val">中长期。"碎片化疗愈"是持续趋势，不会短期消退</span></div>
+        <div class="trend-detail"><span class="td-key">值得跟进</span><span class="td-val">是。门槛低，可结合个人日常持续产出</span></div>
+      </div>
+
+      <div class="trend-card">
+        <div class="trend-header"><span class="trend-name">AI 工具实测合集</span><span class="trend-tag">科技 / 效率</span></div>
+        <div class="trend-heat">热度：稳定热门，每周新增笔记 5000+</div>
+        <div class="trend-detail"><span class="td-key">内容形式</span><span class="td-val">图文合集，"我用了 30 款 AI 工具，只推荐这 5 个"，对比测评体</span></div>
+        <div class="trend-detail"><span class="td-key">为什么火</span><span class="td-val">AI 工具爆发但信息过载，用户需要有人帮筛选和推荐，降低决策成本</span></div>
+        <div class="trend-detail"><span class="td-key">用户心理</span><span class="td-val">合集形式有高收藏率，"先马后看"。用户期待持续更新</span></div>
+        <div class="trend-detail"><span class="td-key">常见标题</span><span class="td-val">"2026 必备 AI 工具"/"打工人 AI 工具箱"/"这些 AI 工具让我效率翻倍"</span></div>
+        <div class="trend-detail"><span class="td-key">适合账号</span><span class="td-val">科技、效率、职场、自媒体运营</span></div>
+        <div class="trend-detail"><span class="td-key">品牌借鉴</span><span class="td-val">AI 产品可通过"实测对比"获得自然曝光，关键是让博主真实使用而非硬广</span></div>
+        <div class="trend-detail"><span class="td-key">持续多久</span><span class="td-val">长期。只要 AI 工具持续迭代，就有持续内容</span></div>
+        <div class="trend-detail"><span class="td-key">值得跟进</span><span class="td-val">是。对 DearDay 有直接参考价值，可做"每日工具实测"系列</span></div>
+      </div>
+
+      <div class="trend-card">
+        <div class="trend-header"><span class="trend-name">国货美妆"成分党"崛起</span><span class="trend-tag">美妆 / 快消</span></div>
+        <div class="trend-heat">热度：高位稳定，成分相关笔记日均 2000+</div>
+        <div class="trend-detail"><span class="td-key">内容形式</span><span class="td-val">成分分析图文，"XX 精华成分全解析"，表格 + 实拍对比</span></div>
+        <div class="trend-detail"><span class="td-key">为什么火</span><span class="td-val">消费者教育成熟，从"跟风买"转向"理性选"。国货品牌质量提升但价格优势明显</span></div>
+        <div class="trend-detail"><span class="td-key">用户心理</span><span class="td-val">成分分析有学习价值，高收藏。用户愿意为"专业感"买单</span></div>
+        <div class="trend-detail"><span class="td-key">常见标题</span><span class="td-val">"XX 成分到底有没有用"/"国货精华成分横评"/"敏感肌怎么选成分"</span></div>
+        <div class="trend-detail"><span class="td-key">适合账号</span><span class="td-val">美妆测评、成分科普、护肤种草</span></div>
+        <div class="trend-detail"><span class="td-key">品牌借鉴</span><span class="td-val">透明化成分和功效数据，用专业内容建立信任。避免夸大宣传</span></div>
+        <div class="trend-detail"><span class="td-key">持续多久</span><span class="td-val">长期趋势。消费者理性化不可逆</span></div>
+        <div class="trend-detail"><span class="td-key">值得跟进</span><span class="td-val">如关注消费品牌营销，值得学习"专业内容驱动信任"的方法论</span></div>
+      </div>
+
+      <div class="trend-card">
+        <div class="trend-header"><span class="trend-name">"一个人的仪式感"独居生活</span><span class="trend-tag">生活方式 / 独居</span></div>
+        <div class="trend-heat">热度：上升期，相关话题浏览量破 5 亿</div>
+        <div class="trend-detail"><span class="td-key">内容形式</span><span class="td-val">Vlog 或图文，"一个人也要好好吃饭"，氛围感实拍 + 好物分享</span></div>
+        <div class="trend-detail"><span class="td-key">为什么火</span><span class="td-val">独居青年增多（超 1 亿），"悦己"消费成为主流。独居不再是孤独而是选择</span></div>
+        <div class="trend-detail"><span class="td-key">用户心理</span><span class="td-val">情感共鸣 + 实用参考。既获得"被理解"的安慰，又获得好物推荐</span></div>
+        <div class="trend-detail"><span class="td-key">常见标题</span><span class="td-val">"独居女孩的幸福感好物"/"一个人的晚餐不将就"/"独居第 X 天"</span></div>
+        <div class="trend-detail"><span class="td-key">适合账号</span><span class="td-val">生活方式、家居、美食、好物分享</span></div>
+        <div class="trend-detail"><span class="td-key">品牌借鉴</span><span class="td-val">小家电、食品品牌可切入"独居场景"，强调"一人份""便携""仪式感"</span></div>
+        <div class="trend-detail"><span class="td-key">持续多久</span><span class="td-val">中长期。独居人口持续增长</span></div>
+        <div class="trend-detail"><span class="td-key">值得跟进</span><span class="td-val">是。可结合个人生活持续产出，门槛低</span></div>
+      </div>
+    </div>
+
+    <!-- 抖音热点 -->
+    <div class="tab-panel" data-panel="dy">
+      <div class="trend-card">
+        <div class="trend-header"><span class="trend-name">职场短剧"打工人系列"</span><span class="trend-tag">剧情 / 职场</span></div>
+        <div class="trend-heat">热度：爆发期，单条最高播放 2 亿+</div>
+        <div class="trend-detail"><span class="td-key">视频结构</span><span class="td-val">3 秒冲突开场 → 30 秒剧情展开 → 15 秒金句收尾，总时长 45-60 秒</span></div>
+        <div class="trend-detail"><span class="td-key">前三秒</span><span class="td-val">直接展示职场冲突场景（被领导骂、被甩锅、被迫加班），情绪先行</span></div>
+        <div class="trend-detail"><span class="td-key">情绪价值</span><span class="td-val">共情 + 宣泄，"替我说出了不敢说的话"。看完有"爽感"</span></div>
+        <div class="trend-detail"><span class="td-key">常见形式</span><span class="td-val">轻喜剧 BGM + #打工人名场面 话题标签，系列化角色固定</span></div>
+        <div class="trend-detail"><span class="td-key">为什么传播</span><span class="td-val">高共情 + 可二创 + 话题标签流量加持。用户转发给同事"这不就是咱公司吗"</span></div>
+        <div class="trend-detail"><span class="td-key">创作者跟进</span><span class="td-val">系列化运营，建立"职场人设"。关键是角色固定、场景真实、金句输出</span></div>
+        <div class="trend-detail"><span class="td-key">品牌借鉴</span><span class="td-val">职场用品、办公软件可做品牌植入。注意不要破坏剧情真实感</span></div>
+        <div class="trend-detail"><span class="td-key">适合长期</span><span class="td-val">是。职场题材有持续受众，可不断迭代场景</span></div>
+        <div class="trend-detail"><span class="td-key">值得跟进</span><span class="td-val">是。适合有表演能力的创作者，文字创作者可做"职场金句"图文版</span></div>
+      </div>
+
+      <div class="trend-card">
+        <div class="trend-header"><span class="trend-name">"消费降级"生活妙招</span><span class="trend-tag">生活技巧 / 消费</span></div>
+        <div class="trend-heat">热度：上升期，话题播放量破 10 亿</div>
+        <div class="trend-detail"><span class="td-key">视频结构</span><span class="td-val">问题展示 → 平价方案 → 效果对比，总时长 30-45 秒</span></div>
+        <div class="trend-detail"><span class="td-key">前三秒</span><span class="td-val">"这个东西只要 9 块 9"的价格锚定，用低价制造惊喜感</span></div>
+        <div class="trend-detail"><span class="td-key">情绪价值</span><span class="td-val">获得感 + 精明感。"原来还能这样省钱"的满足感</span></div>
+        <div class="trend-detail"><span class="td-key">常见形式</span><span class="td-val">轻快 BGM + #省钱妙招 话题，对比展示是核心</span></div>
+        <div class="trend-detail"><span class="td-key">为什么传播</span><span class="td-val">实用性强，转发给家人朋友。消费理性化大趋势下的必然产物</span></div>
+        <div class="trend-detail"><span class="td-key">创作者跟进</span><span class="td-val">垂直品类深耕（家居、美食、穿搭）。关键是真便宜真有用</span></div>
+        <div class="trend-detail"><span class="td-key">品牌借鉴</span><span class="td-val">平价品牌可借势做"高性价比"内容。高端品牌需重新定位价值主张</span></div>
+        <div class="trend-detail"><span class="td-key">适合长期</span><span class="td-val">是。消费理性化是长期趋势</span></div>
+        <div class="trend-detail"><span class="td-key">值得跟进</span><span class="td-val">是。门槛低，可结合日常生活持续产出</span></div>
+      </div>
+
+      <div class="trend-card">
+        <div class="trend-header"><span class="trend-name">运动跟练打卡挑战</span><span class="trend-tag">健身 / 挑战</span></div>
+        <div class="trend-heat">热度：稳定热门，#30天打卡挑战 播放量破 50 亿</div>
+        <div class="trend-detail"><span class="td-key">视频结构</span><span class="td-val">打卡天数 → 今日训练内容 → 训练感受，30-60 秒</span></div>
+        <div class="trend-detail"><span class="td-key">前三秒</span><span class="td-val">身材变化对比图，"第 1 天 vs 第 30 天"的视觉冲击</span></div>
+        <div class="trend-detail"><span class="td-key">情绪价值</span><span class="td-val">激励 + 社群归属。"如果我也能做到，你也可以"的赋权感</span></div>
+        <div class="trend-detail"><span class="td-key">常见形式</span><span class="td-val">节奏感 BGM + #XX天打卡挑战 话题，每天更新形成系列</span></div>
+        <div class="trend-detail"><span class="td-key">为什么传播</span><span class="td-val">挑战机制天然带传播属性。用户互相监督打卡，形成社群效应</span></div>
+        <div class="trend-detail"><span class="td-key">创作者跟进</span><span class="td-val">选择一个垂直运动方向（跑步、跳绳、瑜伽）持续打卡。关键是真实记录</span></div>
+        <div class="trend-detail"><span class="td-key">品牌借鉴</span><span class="td-val">运动品牌可发起品牌挑战赛，设置奖励机制激励用户参与</span></div>
+        <div class="trend-detail"><span class="td-key">适合长期</span><span class="td-val">是。健身是永恒话题，打卡形式可持续</span></div>
+        <div class="trend-detail"><span class="td-key">值得跟进</span><span class="td-val">是。与健康目标一致，可结合个人运动计划做内容</span></div>
+      </div>
+
+      <div class="trend-card">
+        <div class="trend-header"><span class="trend-name">AI 变身 / 换装特效</span><span class="trend-tag">特效 / 娱乐</span></div>
+        <div class="trend-heat">热度：高位，#AI变身 话题播放量破 20 亿</div>
+        <div class="trend-detail"><span class="td-key">视频结构</span><span class="td-val">素颜/日常 → 特效触发 → 变身后对比，15-30 秒</span></div>
+        <div class="trend-detail"><span class="td-key">前三秒</span><span class="td-val">"猜猜我能变成谁"的悬念，或直接展示最惊艳的变身结果</span></div>
+        <div class="trend-detail"><span class="td-key">情绪价值</span><span class="td-val">惊奇 + 娱乐。视觉冲击带来的即时满足感</span></div>
+        <div class="trend-detail"><span class="td-key">常见形式</span><span class="td-val">热门 BGM + #AI变身 话题，使用平台内置特效或第三方 AI 工具</span></div>
+        <div class="trend-detail"><span class="td-key">为什么传播</span><span class="td-val">视觉冲击强，适合转发。变身前后的反差感是核心传播动力</span></div>
+        <div class="trend-detail"><span class="td-key">创作者跟进</span><span class="td-val">结合个人特色做系列（如"历史人物变身""动漫角色变身"）</span></div>
+        <div class="trend-detail"><span class="td-key">品牌借鉴</span><span class="td-val">美妆、时尚品牌可做"AI 试妆""AI 换装"变体，增强互动体验</span></div>
+        <div class="trend-detail"><span class="td-key">适合长期</span><span class="td-val">短期。依赖特效更新速度，需不断换新玩法</span></div>
+        <div class="trend-detail"><span class="td-key">值得跟进</span><span class="td-val">关注但不急于跟进。了解 AI 特效趋势即可，适合品牌营销而非个人创作者</span></div>
+      </div>
+    </div>
+
+    <!-- 平台观察 -->
+    <div class="platform-observation">
+      <div class="po-title">今日平台观察</div>
+      <div class="po-item"><span class="po-key">小红书</span>用户更关注"怎么选"和"怎么生活"——消费决策参考和生活方式灵感。搜索和收藏是核心行为</div>
+      <div class="po-item"><span class="po-key">抖音</span>用户更关注"看什么"和"跟什么"——娱乐消遣和参与感。即时满足和情绪共鸣是核心驱动</div>
+      <div class="po-item"><span class="po-key">内容逻辑</span>小红书是"搜索+收藏"逻辑，内容需要长期价值和可操作性；抖音是"推荐+即时满足"逻辑，内容需要前 3 秒抓住注意力</div>
+      <div class="po-item"><span class="po-key">营销学习</span>小红书"AI 工具实测"趋势最值得学习——展示了如何用内容做产品教育，用户主动搜索而非被动接受</div>
+      <div class="po-item"><span class="po-key">创作者跟进</span>抖音"运动跟练打卡"最适合普通创作者——门槛低、有社群效应、可结合个人真实生活</div>
+    </div>
+  </section>
+
+    <!-- English Coach -->
+    <section class="section-full" id="sec-05">
+    <div class="section-header">
+      <span class="section-number">05</span>
+      <span class="section-title">English Coach</span>
+      <span class="section-meta"><button class="tc-btn" onclick="toggleFavPanel()">收藏夹</button></span>
+    </div>
+
+    <!-- 今日商务表达 -->
+    <div class="eng-section">
+      <div class="eng-section-title">今日商务表达</div>
+      <div class="vocab-row">
+        <div class="vocab-content">
+          <div class="vocab-phrase">ship quickly</div>
+          <div class="vocab-cn">快速发布 / 快速交付</div>
+          <div class="vocab-eg">"We decided to ship quickly and iterate based on real usage."</div>
+        </div>
+        <button class="collect-btn" onclick="collectExpr(this)" data-en="ship quickly" data-cn="快速发布/交付" data-src="商务表达" data-ctx="讨论产品开发节奏">收藏</button>
+      </div>
+      <div class="vocab-row">
+        <div class="vocab-content">
+          <div class="vocab-phrase">trade-off</div>
+          <div class="vocab-cn">权衡 / 取舍</div>
+          <div class="vocab-eg">"Building for everyone was a trade-off I wasn't willing to make."</div>
+        </div>
+        <button class="collect-btn" onclick="collectExpr(this)" data-en="trade-off" data-cn="权衡/取舍" data-src="商务表达" data-ctx="讨论产品决策">收藏</button>
+      </div>
+    </div>
+
+    <!-- 今日面试问题 -->
+    <div class="eng-section">
+      <div class="eng-section-title">今日面试问题 — AI Product Marketing</div>
+      <div class="interview-question">
+        <div class="iq-en">Tell me about a project you are particularly proud of.</div>
+        <div class="iq-cn">请介绍一个你特别自豪的项目。</div>
+        <div class="iq-analysis">
+          <div class="iq-analysis-item"><span class="ia-key">为什么问</span>考察你的项目判断力和结果导向思维，看你能否区分"做了什么"和"创造了什么价值"</div>
+          <div class="iq-analysis-item"><span class="ia-key">真正想看</span>你选择什么项目作为"自豪"的标志，反映你的价值观和职业方向</div>
+          <div class="iq-analysis-item"><span class="ia-key">回答结构</span>STAR 框架 — 背景、任务、行动、结果，再加反思</div>
+          <div class="iq-analysis-item"><span class="ia-key">避免</span>只讲技术细节不讲业务影响；把团队成果说成个人功劳；没有量化结果</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 三轮完整面试对话 -->
+    <div class="eng-section">
+      <div class="eng-section-title">三轮完整面试对话</div>
+
+      <!-- Round 1 -->
+      <div class="dialogue-round">
+        <div class="dr-header">第 1 轮 — 主问题</div>
+        <div class="dr-content">
+          <div class="dialogue-text">
+            <div class="dt-label">Interviewer</div>
+            <div class="dt-en">Tell me about a project you are particularly proud of.</div>
+            <div class="dt-cn">请介绍一个你特别自豪的项目。</div>
+          </div>
+          <div class="dialogue-text">
+            <div class="dt-label">Candidate</div>
+            <div class="dt-en">I'm most proud of DearDay, a personal daily dashboard I designed and built. The idea came from a personal pain point — I was spending 30+ minutes every morning jumping between news apps, todo lists, and social media. I wanted to condense that into 3-5 minutes. I handled everything from product strategy to front-end development. The biggest challenge was deciding what NOT to include — I had to resist adding features and focus on making each module genuinely useful every day. I launched it with five modules: news brief, todo, workout, marketing radar, and English practice. The result was a tool I genuinely use every morning, and the process taught me how to design products around real daily behaviors rather than feature checklists.</div>
+            <div class="dt-cn">我最自豪的项目是 DearDay，一个我设计开发的每日工作台。想法来自个人痛点——每天早上花 30 多分钟在新闻、待办和社交媒体间切换。我希望能压缩到 3-5 分钟。我负责从产品策略到前端开发的全部工作。最大的挑战是决定不做什么——必须忍住加功能的冲动，专注让每个模块每天都真正有用。最终发布了五个模块。结果是一个我每天真正在用的工具，这个过程教会了我如何围绕真实的日常行为设计产品。</div>
+            <button class="collect-btn" onclick="collectExpr(this)" data-en="I'm most proud of DearDay, a personal daily dashboard I designed and built." data-cn="我最自豪的项目是 DearDay" data-src="面试 Round 1" data-ctx="项目介绍开场白">收藏句</button>
+          </div>
+          <div class="dialogue-text">
+            <div class="dt-label">回答结构分析</div>
+            <div class="dt-analysis">STAR+R 框架。S: 个人痛点 → T: 压缩到 3-5 分钟 → A: 产品策略+开发+克制功能 → R: 每天使用 → R: 学到产品设计思维。有个人色彩，有具体决策("决定不做什么")，有可感知的结果。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Round 2 -->
+      <div class="dialogue-round">
+        <div class="dr-header">第 2 轮 — 基于第一轮的追问</div>
+        <div class="dr-content">
+          <div class="dialogue-text">
+            <div class="dt-label">Interviewer</div>
+            <div class="dt-en">What was the most difficult decision you had to make during the project?</div>
+            <div class="dt-cn">在项目过程中，你不得不做的最困难的决定是什么？</div>
+          </div>
+          <div class="dialogue-text">
+            <div class="dt-label">Candidate</div>
+            <div class="dt-en">The most difficult decision was choosing to build it as a personal tool first, rather than trying to build a product for a broad audience. I considered building a more generalizable version with user accounts and social features. But I realized that would dilute the core value proposition — a dashboard that tries to be everything for everyone ends up being nothing for anyone. So I made the decision to build the simplest version that solved my own problem perfectly, iterate based on real usage, and only then think about what might be valuable to others. Looking back, this was the right call. The temptation to build for "users" before truly understanding one user's needs is one of the biggest traps in product development.</div>
+            <div class="dt-cn">最困难的决定是选择先做成个人工具，而不是一开始就为广泛的用户群体做产品。我考虑过做更通用的版本，包含用户账号和社交功能。但我意识到这会稀释核心价值主张——一个试图为所有人做所有事的 Dashboard，最终对谁都没有用。所以我决定先做最简单的版本，完美解决自己的问题，根据真实使用迭代，然后再思考什么对别人有价值。回头看，这是正确的选择。在真正理解一个用户的需求之前就想为"用户"做产品，是产品开发中最大的陷阱之一。</div>
+            <button class="collect-btn" onclick="collectExpr(this)" data-en="A dashboard that tries to be everything for everyone ends up being nothing for anyone." data-cn="试图为所有人做所有事的产品，最终对谁都没有用" data-src="面试 Round 2" data-ctx="产品定位金句">收藏句</button>
+          </div>
+          <div class="dialogue-text">
+            <div class="dt-label">回答思路</div>
+            <div class="dt-analysis">展示决策思考过程。关键要素：(1) 描述具体选择 (2) 解释为什么难——多个合理选项 (3) 权衡思维——通用性 vs 专注度 (4) 事后验证。关键词：trade-off, dilute, value proposition, validate</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Round 3 -->
+      <div class="dialogue-round">
+        <div class="dr-header">第 3 轮 — 更深入的挑战性追问</div>
+        <div class="dr-content">
+          <div class="dialogue-text">
+            <div class="dt-label">Interviewer</div>
+            <div class="dt-en">If you could restart the project, what would you do differently?</div>
+            <div class="dt-cn">如果能重新开始这个项目，你会怎么做？</div>
+          </div>
+          <div class="dialogue-text">
+            <div class="dt-label">Candidate</div>
+            <div class="dt-en">I would build in data persistence and cross-device sync from day one. Currently it relies on browser localStorage, so data doesn't transfer between devices. I underestimated how quickly I'd want to access it from both laptop and phone. I'd also start with a clearer content update strategy — right now, news and trends require manual updates. If starting over, I'd design the data layer first. The third thing is adding lightweight analytics from the beginning — not for external tracking, but for personal insight into which modules I actually use most. But honestly, starting scrappy was the right approach. The mistake wasn't the initial execution — it was not revisiting these architectural decisions sooner as the product proved its daily value.</div>
+            <div class="dt-cn">我会从第一天就做好数据持久化和跨设备同步。目前依赖浏览器 localStorage，数据不能在设备间转移。我低估了自己多快就会想同时在笔记本和手机上使用。我也会从一开始就制定更清晰的内容更新策略——目前新闻和趋势需要手动更新。如果重新开始，我会先设计数据层。第三是从一开始就加入轻量分析——不是为了外部追踪，而是为了个人洞察。但说实话，从简陋开始是正确的。错误不在于最初的执行——而在于没有在产品证明了日常价值后更早地重新审视这些架构决策。</div>
+            <button class="collect-btn" onclick="collectExpr(this)" data-en="Starting scrappy was the right approach. The mistake wasn't the initial execution — it was not revisiting these architectural decisions sooner." data-cn="从简陋开始是对的，错误是没有更早地重新审视架构决策" data-src="面试 Round 3" data-ctx="反思与成长心态">收藏句</button>
+          </div>
+          <div class="dialogue-text">
+            <div class="dt-label">回答思路</div>
+            <div class="dt-analysis">展示反思能力同时不过度自我批评。关键要素：(1) 具体改进点 (2) 解释为什么重要 (3) 平衡"会改进什么"和"什么做对了" (4) 成长心态。关键词：data persistence, cross-device sync, underestimate, analytics, iterate, scrappy</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 回答框架 -->
+    <div class="eng-section">
+      <div class="eng-section-title">本题回答框架</div>
+      <div class="framework-box">
+        <div class="framework-flow">
+          背景（项目是什么）→ 我的职责（我负责什么）→ 遇到的问题（核心挑战）→ 我的行动（具体做了什么）→ 结果（可量化的成果）→ 反思（学到什么、会怎么改进）
+        </div>
+      </div>
+    </div>
+
+    <!-- 可替换内容 -->
+    <div class="eng-section">
+      <div class="eng-section-title">可替换内容</div>
+      <div class="framework-box">
+        <ul class="replaceable-list">
+          <li>"DearDay" → 替换为你的真实项目名称</li>
+          <li>"30+ minutes" → 替换为你真实的痛点数据</li>
+          <li>"five modules" → 根据你的项目调整模块描述</li>
+          <li>"I handled everything" → 如果是团队项目，明确你的具体角色和贡献</li>
+          <li>技术细节 → 根据面试岗位调整（PM 岗侧重产品决策，Marketing 岗侧重用户洞察，开发岗侧重技术选型）</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 面试官评价 -->
+    <div class="eng-section">
+      <div class="eng-section-title">面试官评价</div>
+      <div class="evaluation-box">
+        <div class="eval-item"><span class="eval-key pos">优点</span>结构清晰，有具体决策过程，展示了产品思维和克制力</div>
+        <div class="eval-item"><span class="eval-key neg">不足</span>缺少量化数据（用户数、时间节省的具体百分比、留存率）</div>
+        <div class="eval-item"><span class="eval-key">具体性</span>较好。"决定不做什么"是具体的决策，不是泛泛而谈</div>
+        <div class="eval-item"><span class="eval-key">个人贡献</span>明确。"I handled everything" 清晰界定角色</div>
+        <div class="eval-item"><span class="eval-key">结果</span>有定性描述但缺定量指标。建议补充"使用 X 周后，每天节省约 25 分钟"</div>
+        <div class="eval-item"><span class="eval-key">优化建议</span>准备一个具体的用户反馈故事；补充数据指标；针对不同岗位准备不同侧重点的版本</div>
+      </div>
+    </div>
+
+    <!-- 我的回答 -->
+    <div class="eng-section">
+      <div class="eng-section-title">练习我的回答</div>
+      <textarea class="my-answer-textarea" id="my-answer" placeholder="在这里输入你的英文回答..."></textarea>
+      <div class="my-answer-actions">
+        <button class="btn-outline" onclick="compareWithSample()">对比示范答案</button>
+        <button class="btn-outline" onclick="saveMyAnswer()">保存本次练习</button>
+        <button class="btn-outline" onclick="loadMyAnswer()">加载已保存</button>
+      </div>
+      <div class="compare-box" id="compare-box" style="display:none;">
+        <div class="compare-col">
+          <div class="compare-label">示范回答</div>
+          <div class="compare-text" id="compare-sample"></div>
+        </div>
+        <div class="compare-col">
+          <div class="compare-label">我的回答</div>
+          <div class="compare-text" id="compare-mine"></div>
+        </div>
+      </div>
+    </div>
+    </section>
+
+  <!-- Training Modal -->
+  <div class="modal-overlay" id="training-modal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeTrainingModal()">&times;</button>
+      <div class="modal-title" id="modal-title">添加训练</div>
+      <input type="hidden" id="modal-id" />
+      <div class="form-group">
+        <label class="form-label">训练名称</label>
+        <input type="text" class="form-input" id="modal-name" placeholder="如：帕梅拉全身燃脂训练" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">视频链接</label>
+        <input type="text" class="form-input" id="modal-url" placeholder="粘贴 B站/小红书/YouTube 链接" oninput="autoDetectPlatform()" />
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">视频平台</label>
+          <select class="form-select" id="modal-platform">
+            <option value="">自动识别</option>
+            <option value="哔哩哔哩">哔哩哔哩</option>
+            <option value="小红书">小红书</option>
+            <option value="YouTube">YouTube</option>
+            <option value="其他网页链接">其他网页链接</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">训练类型</label>
+          <select class="form-select" id="modal-type">
+            <option value="全身有氧">全身有氧</option>
+            <option value="力量训练">力量训练</option>
+            <option value="核心训练">核心训练</option>
+            <option value="拉伸放松">拉伸放松</option>
+            <option value="HIIT">HIIT</option>
+            <option value="Pilates">Pilates</option>
+            <option value="跑步">跑步</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">训练时长（分钟）</label>
+          <input type="number" class="form-input" id="modal-duration" placeholder="30" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">难度</label>
+          <select class="form-select" id="modal-difficulty">
+            <option value="简单">简单</option>
+            <option value="中等">中等</option>
+            <option value="困难">困难</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">安排日期</label>
+          <input type="date" class="form-input" id="modal-date" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">是否重复</label>
+          <select class="form-select" id="modal-repeat">
+            <option value="none">不重复</option>
+            <option value="weekly">每周重复</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">备注</label>
+        <textarea class="form-textarea" id="modal-notes" placeholder="训练要点、注意事项等"></textarea>
+      </div>
+      <button class="btn-add" style="width:100%;margin-top:8px;" onclick="saveTrainingFromModal()">保存</button>
+    </div>
+  </div>
+
+  <!-- Favorites Panel -->
+  <div class="fav-backdrop" id="fav-backdrop" onclick="toggleFavPanel()"></div>
+  <div class="fav-panel" id="fav-panel">
+    <div class="fav-header">
+      <span class="fav-title">英语收藏夹</span>
+      <button class="modal-close" onclick="toggleFavPanel()">&times;</button>
+    </div>
+    <input type="text" class="fav-search" id="fav-search" placeholder="搜索收藏内容..." oninput="renderFavorites()" />
+    <div class="fav-list" id="fav-list"></div>
+  </div>
+
+  <!-- ===== 06 理财观察 ===== -->
+  <section class="section-full" id="sec-06">
+    <div class="section-header">
+      <span class="section-number">06</span>
+      <span class="section-title">理财观察</span>
+      <span class="section-meta" id="fin-updated-time"></span>
+    </div>
+
+    <div class="tab-nav" id="finance-tabs">
+      <button class="tab-btn active" data-tab="fin-overview">今日概览</button>
+      <button class="tab-btn" data-tab="fin-funds">我的基金</button>
+      <button class="tab-btn" data-tab="fin-structure">组合结构</button>
+      <button class="tab-btn" data-tab="fin-news">相关新闻</button>
+      <button class="tab-btn" data-tab="fin-records">投资记录</button>
+    </div>
+
+    <!-- 今日概览 -->
+    <div class="tab-panel active" data-panel="fin-overview">
+      <div class="fin-overview" id="fin-overview-stats"></div>
+      <div class="fin-alert" id="fin-alert-risk"></div>
+      <div class="fin-alert" id="fin-alert-event"></div>
+      <div class="fund-list" id="fin-overview-list"></div>
+      <div class="fin-updated">
+        <span id="fin-data-source"></span>
+        <button class="fin-refresh-btn" onclick="refreshFundLive()">手动刷新</button>
+      </div>
+    </div>
+
+    <!-- 我的基金 -->
+    <div class="tab-panel" data-panel="fin-funds">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <span style="font-size:12px;color:var(--text-2);">点击基金名称查看详细信息</span>
+        <button class="btn-outline" onclick="openAddFundModal()">添加基金</button>
+      </div>
+      <div class="fund-list" id="fin-funds-list"></div>
+    </div>
+
+    <!-- 组合结构 -->
+    <div class="tab-panel" data-panel="fin-structure">
+      <div id="fin-overlap-analysis"></div>
+      <div id="fin-exposure-analysis"></div>
+    </div>
+
+    <!-- 相关新闻 -->
+    <div class="tab-panel" data-panel="fin-news">
+      <div class="news-filter" id="fin-news-filter"></div>
+      <div id="fin-news-list"></div>
+    </div>
+
+    <!-- 投资记录 -->
+    <div class="tab-panel" data-panel="fin-records">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <span style="font-size:12px;color:var(--text-2);">持仓与定投记录</span>
+        <button class="btn-outline" onclick="openPositionModal(null)">录入持仓</button>
+      </div>
+      <div id="fin-records-table"></div>
+    </div>
+  </section>
+
+  <!-- Position Modal -->
+  <div class="fin-modal-overlay" id="fin-pos-modal">
+    <div class="fin-modal">
+      <button class="modal-close" onclick="closePositionModal()">&times;</button>
+      <div class="modal-title" id="fin-pos-title">录入持仓</div>
+      <input type="hidden" id="pos-fund-id" />
+      <div class="form-group">
+        <label class="form-label">基金</label>
+        <div id="pos-fund-name" style="font-size:13px;font-weight:600;"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">持有金额（元）</label>
+          <input type="number" class="form-input" id="pos-amount" placeholder="如 10000" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">持有份额</label>
+          <input type="number" class="form-input" id="pos-shares" placeholder="如 5000" step="0.01" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">持仓成本（元）</label>
+          <input type="number" class="form-input" id="pos-cost" placeholder="如 1.5000" step="0.0001" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">首次买入日期</label>
+          <input type="date" class="form-input" id="pos-buy-date" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">定投金额（元/次）</label>
+          <input type="number" class="form-input" id="pos-dingtou-amount" placeholder="如 500" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">定投频率</label>
+          <select class="form-select" id="pos-dingtou-freq">
+            <option value="">不定投</option>
+            <option value="每周">每周</option>
+            <option value="每两周">每两周</option>
+            <option value="每月">每月</option>
+            <option value="每两周发薪">每两周发薪</option>
+            <option value="每月发薪">每月发薪</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">备注</label>
+        <textarea class="form-textarea" id="pos-note" placeholder="投资理由、观察要点等"></textarea>
+      </div>
+      <button class="btn-add" style="width:100%;margin-top:8px;" onclick="savePosition()">保存</button>
+    </div>
+  </div>
+
+  <!-- Add Fund Modal -->
+  <div class="fin-modal-overlay" id="fin-add-modal">
+    <div class="fin-modal">
+      <button class="modal-close" onclick="closeAddFundModal()">&times;</button>
+      <div class="modal-title" id="fin-add-title">添加基金</div>
+      <input type="hidden" id="add-fund-id" />
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">基金名称</label>
+          <input type="text" class="form-input" id="add-fund-name" placeholder="如 华夏沪深300ETF联接A" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">基金代码</label>
+          <input type="text" class="form-input" id="add-fund-code" placeholder="如 000051" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">基金公司</label>
+          <input type="text" class="form-input" id="add-fund-company" placeholder="如 华夏基金" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">基金类型</label>
+          <input type="text" class="form-input" id="add-fund-type" placeholder="如 指数型 / 混合型 / QDII" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">主要投资市场</label>
+          <input type="text" class="form-input" id="add-fund-market" placeholder="如 美股 / A股 / 新兴市场" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">主要投资方向</label>
+          <input type="text" class="form-input" id="add-fund-direction" placeholder="如 纳斯达克100 / TMT" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">最新单位净值</label>
+          <input type="number" class="form-input" id="add-fund-nav" placeholder="如 1.2345" step="0.0001" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">净值日期</label>
+          <input type="date" class="form-input" id="add-fund-nav-date" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">单日涨跌幅（%）</label>
+          <input type="number" class="form-input" id="add-fund-change" placeholder="如 -1.23" step="0.01" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">风险等级</label>
+          <input type="text" class="form-input" id="add-fund-risk" placeholder="如 高风险 / 中高风险" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">官方页面链接</label>
+        <input type="url" class="form-input" id="add-fund-url" placeholder="https://" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">投资理由</label>
+        <textarea class="form-textarea" id="add-fund-reason" placeholder="为什么关注这只基金"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">备注</label>
+        <textarea class="form-textarea" id="add-fund-note" placeholder="其他信息"></textarea>
+      </div>
+      <button class="btn-add" style="width:100%;margin-top:8px;" onclick="saveCustomFund()">保存</button>
+    </div>
+  </div>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    Atlas Dashboard — Spend 3 minutes. Know what matters today.
+  </footer>
+
+</div>
+
+<script>
+/* ===== Global Error Handler ===== */
+window.addEventListener('error', function(e) {
+  console.error('[Atlas Error]', e.message, e.filename ? '(' + e.filename + ':' + e.lineno + ')' : '');
+});
+</script>
+
+<!-- ===== Utils Module ===== -->
+<script>
+(function() {
+  'use strict';
+  try {
+    window.escapeHtml = function(str) {
+      if (str === null || str === undefined) return '';
+      var div = document.createElement('div');
+      div.textContent = String(str);
+      return div.innerHTML;
+    };
+
+    window.getTodayKey = function() {
+      var d = new Date();
+      var m = String(d.getMonth() + 1);
+      var day = String(d.getDate());
+      if (m.length < 2) m = '0' + m;
+      if (day.length < 2) day = '0' + day;
+      return d.getFullYear() + '-' + m + '-' + day;
+    };
+
+    window.dateToStr = function(d) {
+      var m = String(d.getMonth() + 1);
+      var day = String(d.getDate());
+      if (m.length < 2) m = '0' + m;
+      if (day.length < 2) day = '0' + day;
+      return d.getFullYear() + '-' + m + '-' + day;
+    };
+
+    window.detectPlatform = function(url) {
+      if (!url) return '';
+      if (url.indexOf('bilibili.com') >= 0 || url.indexOf('b23.tv') >= 0) return '哔哩哔哩';
+      if (url.indexOf('youtube.com') >= 0 || url.indexOf('youtu.be') >= 0) return 'YouTube';
+      if (url.indexOf('xiaohongshu.com') >= 0 || url.indexOf('xhslink') >= 0) return '小红书';
+      return '其他网页链接';
+    };
+
+    window.getDayNameCN = function(day) {
+      return ['周日','周一','周二','周三','周四','周五','周六'][day] || '';
+    };
+
+    window.getWeekDates = function() {
+      var today = new Date();
+      var day = today.getDay();
+      var monday = new Date(today);
+      monday.setDate(today.getDate() - (day === 0 ? 6 : day - 1));
+      var dates = [];
+      for (var i = 0; i < 7; i++) {
+        var d = new Date(monday);
+        d.setDate(monday.getDate() + i);
+        dates.push(d);
+      }
+      return dates;
+    };
+  } catch(e) { console.error('Utils module error:', e); }
+})();
+</script>
+
+<!-- ===== Todo Module ===== -->
+<script>
+(function() {
+  'use strict';
+  try {
+    var TODO_KEY = 'atlas_todos';
+
+    var defaultTodos = [
+      { id: 't1', title: '完成 Atlas Dashboard 理财模块数据更新', project: 'DearDay', completed: false },
+      { id: 't2', title: '复习英语面试 Round 2 表达', project: 'Career', completed: false },
+      { id: 't3', title: '帕梅拉全身燃脂 30 分钟', project: 'Fitness', completed: false }
+    ];
+
+    function getTodos() {
+      try { var s = localStorage.getItem(TODO_KEY); return s ? JSON.parse(s) : defaultTodos; }
+      catch(e) { return defaultTodos; }
+    }
+    function saveTodos(todos) {
+      try { localStorage.setItem(TODO_KEY, JSON.stringify(todos)); } catch(e) {}
+    }
+
+    function renderTodos() {
+      var todos = getTodos();
+      var list = document.getElementById('todo-list');
+      if (!list) return;
+      var remaining = todos.filter(function(t) { return !t.completed; }).length;
+      var countEl = document.getElementById('todo-count');
+      if (countEl) countEl.textContent = remaining + ' remaining';
+
+      if (todos.length === 0) {
+        list.innerHTML = '<li class="todo-empty">No tasks yet. Add one below.</li>';
+        return;
+      }
+
+      list.innerHTML = todos.map(function(todo) {
+        return '<li class="todo-item' + (todo.completed ? ' completed' : '') + '" data-id="' + todo.id + '">' +
+          '<button class="checkbox' + (todo.completed ? ' checked' : '') + '" data-action="toggle"></button>' +
+          '<div class="todo-content">' +
+          '<span class="todo-title">' + escapeHtml(todo.title) + '</span>' +
+          '<span class="todo-tag">' + escapeHtml(todo.project) + '</span>' +
+          '</div>' +
+          '<button class="todo-delete" data-action="delete">\u00d7</button>' +
+          '</li>';
+      }).join('');
+    }
+
+    window.addTodo = function() {
+      var input = document.getElementById('todo-input');
+      var project = document.getElementById('todo-project');
+      if (!input || !input.value.trim()) return;
+      var todos = getTodos();
+      todos.push({
+        id: 't' + Date.now(),
+        title: input.value.trim(),
+        project: project ? project.value : 'DearDay',
+        completed: false
+      });
+      saveTodos(todos);
+      input.value = '';
+      renderTodos();
+    };
+
+    var todoList = document.getElementById('todo-list');
+    if (todoList) {
+      todoList.addEventListener('click', function(e) {
+        var item = e.target.closest('.todo-item');
+        if (!item) return;
+        var id = item.dataset.id;
+        var action = e.target.dataset.action;
+        if (!action) return;
+        var todos = getTodos();
+        var todo = todos.find(function(t) { return t.id === id; });
+        if (!todo) return;
+        if (action === 'toggle') {
+          todo.completed = !todo.completed;
+          saveTodos(todos);
+          renderTodos();
+        } else if (action === 'delete') {
+          todos = todos.filter(function(t) { return t.id !== id; });
+          saveTodos(todos);
+          renderTodos();
+        }
+      });
+    }
+
+    var todoInput = document.getElementById('todo-input');
+    if (todoInput) {
+      todoInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') addTodo();
+      });
+    }
+
+    renderTodos();
+  } catch(e) { console.error('Todo module error:', e); }
+})();
+</script>
+
+<!-- ===== Workout Module ===== -->
+<script>
+(function() {
+  'use strict';
+  try {
+    var LIB_KEY = 'atlas_workout_lib';
+    var SCHED_KEY = 'atlas_workout_sched';
+    var WEEKLY_KEY = 'atlas_workout_weekly';
+    var COMP_KEY = 'atlas_workout_comp';
+
+    var defaultLibrary = [
+      { id: 'w1', name: '帕梅拉全身燃脂训练', videoUrl: 'https://www.bilibili.com/video/BV1pE411B7pW', platform: '哔哩哔哩', type: '全身有氧', duration: 30, difficulty: '中等', notes: '适合日常燃脂，动作简单易跟' }
+    ];
+
+    function getLibrary() {
+      try { var s = localStorage.getItem(LIB_KEY); return s ? JSON.parse(s) : defaultLibrary; }
+      catch(e) { return defaultLibrary; }
+    }
+    function saveLibrary(lib) { try { localStorage.setItem(LIB_KEY, JSON.stringify(lib)); } catch(e) {} }
+    function getSchedule() { try { return JSON.parse(localStorage.getItem(SCHED_KEY)) || {}; } catch(e) { return {}; } }
+    function saveSchedule(s) { try { localStorage.setItem(SCHED_KEY, JSON.stringify(s)); } catch(e) {} }
+    function getWeekly() { try { return JSON.parse(localStorage.getItem(WEEKLY_KEY)) || {}; } catch(e) { return {}; } }
+    function saveWeekly(w) { try { localStorage.setItem(WEEKLY_KEY, JSON.stringify(w)); } catch(e) {} }
+    function getCompletion() { try { return JSON.parse(localStorage.getItem(COMP_KEY)) || {}; } catch(e) { return {}; } }
+    function saveCompletion(c) { try { localStorage.setItem(COMP_KEY, JSON.stringify(c)); } catch(e) {} }
+
+    function getTrainingsForDate(dateStr, dayOfWeek) {
+      var sched = getSchedule();
+      var weekly = getWeekly();
+      var ids = (sched[dateStr] || []).slice();
+      var weeklyIds = weekly[String(dayOfWeek)] || [];
+      weeklyIds.forEach(function(id) { if (ids.indexOf(id) < 0) ids.push(id); });
+      return ids;
+    }
+
+    function isTrainingCompleted(dateStr, trainingId) {
+      var comp = getCompletion();
+      return comp[dateStr] && comp[dateStr][trainingId];
+    }
+
+    function calculateStreak() {
+      var comp = getCompletion();
+      var streak = 0;
+      var today = new Date();
+      for (var i = 0; i < 365; i++) {
+        var d = new Date(today);
+        d.setDate(d.getDate() - i);
+        var key = dateToStr(d);
+        if (comp[key] && Object.keys(comp[key]).length > 0) {
+          streak++;
+        } else if (i > 0) {
+          break;
+        }
+      }
+      return streak;
+    }
+
+    function renderTodayTraining() {
+      var today = new Date();
+      var dateStr = getTodayKey();
+      var dayOfWeek = today.getDay();
+      var trainingIds = getTrainingsForDate(dateStr, dayOfWeek);
+      var lib = getLibrary();
+      var comp = getCompletion();
+      var container = document.getElementById('today-training-list');
+      if (!container) return;
+
+      var labelEl = document.getElementById('workout-date-label');
+      if (labelEl) labelEl.textContent = getDayNameCN(dayOfWeek) + ' · ' + dateStr;
+      var streakEl = document.getElementById('streak-num');
+      if (streakEl) streakEl.textContent = calculateStreak();
+
+      if (trainingIds.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-text">今天还没有安排训练</div><button class="btn-outline" onclick="openTrainingModal()">添加训练</button></div>';
+        return;
+      }
+
+      container.innerHTML = trainingIds.map(function(tid) {
+        var t = lib.find(function(x) { return x.id === tid; });
+        if (!t) return '';
+        var done = comp[dateStr] && comp[dateStr][tid];
+        var videoBtn = t.videoUrl ? '<a class="tc-btn" href="' + escapeHtml(t.videoUrl) + '" target="_blank" rel="noopener">开始训练</a>' : '';
+        return '<div class="today-training">' +
+          '<div class="tt-header"><span class="tt-name">' + escapeHtml(t.name) + '</span>' +
+          '<span class="tt-status ' + (done ? 'done' : 'pending') + '">' + (done ? '已完成' : '待完成') + '</span></div>' +
+          '<div class="tt-info"><span class="tt-info-label">类型</span>' + escapeHtml(t.type || '—') + '</div>' +
+          '<div class="tt-info"><span class="tt-info-label">时长</span>' + (t.duration || '—') + ' 分钟</div>' +
+          '<div class="tt-info"><span class="tt-info-label">来源</span>' + escapeHtml(t.platform || '—') + '</div>' +
+          (t.notes ? '<div class="tt-info"><span class="tt-info-label">备注</span>' + escapeHtml(t.notes) + '</div>' : '') +
+          '<div class="tt-actions">' + videoBtn +
+          '<button class="' + (done ? 'btn-complete done' : 'btn-outline') + '" onclick="toggleTrainingComplete(\'' + dateStr + '\',\'' + tid + '\')">' + (done ? '取消完成' : '标记完成') + '</button>' +
+          '<button class="btn-outline" onclick="removeFromSchedule(\'' + dateStr + '\',\'' + tid + '\')">更换训练</button></div>' +
+          '</div>';
+      }).join('');
+    }
+
+    function renderLibrary() {
+      var lib = getLibrary();
+      var container = document.getElementById('library-grid');
+      if (!container) return;
+      if (lib.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-state-text">训练库为空</div><button class="btn-outline" onclick="openTrainingModal()">添加训练</button></div>';
+        return;
+      }
+      container.innerHTML = lib.map(function(t) {
+        var videoBtn = t.videoUrl ? '<a class="tc-btn" href="' + escapeHtml(t.videoUrl) + '" target="_blank" rel="noopener">打开视频</a>' : '';
+        return '<div class="training-card">' +
+          '<div class="tc-name">' + escapeHtml(t.name) + '</div>' +
+          '<span class="tc-platform">' + escapeHtml(t.platform || '未设置') + '</span>' +
+          '<div class="tc-meta">类型：' + escapeHtml(t.type || '—') + '</div>' +
+          '<div class="tc-meta">时长：' + (t.duration || '—') + ' 分钟 · 难度：' + escapeHtml(t.difficulty || '—') + '</div>' +
+          '<div class="tc-actions">' + videoBtn +
+          '<button class="tc-btn" onclick="toggleScheduleForm(\'' + t.id + '\')">加入计划</button>' +
+          '<button class="tc-btn" onclick="openTrainingModal(\'' + t.id + '\')">编辑</button>' +
+          '<button class="tc-btn danger" onclick="deleteTraining(\'' + t.id + '\')">删除</button></div>' +
+          '<div class="tc-schedule-inline" id="sched-form-' + t.id + '">' +
+          '<input type="date" id="sched-date-' + t.id + '" /><select id="sched-repeat-' + t.id + '"><option value="none">不重复</option><option value="weekly">每周</option></select>' +
+          '<button class="tc-btn" onclick="confirmAddToSchedule(\'' + t.id + '\')">确认</button></div>' +
+          '</div>';
+      }).join('');
+    }
+
+    function renderWeekSchedule() {
+      var dates = getWeekDates();
+      var todayStr = getTodayKey();
+      var lib = getLibrary();
+      var comp = getCompletion();
+      var totalDone = 0, totalTrainings = 0;
+
+      var html = dates.map(function(d) {
+        var dateStr = dateToStr(d);
+        var dayOfWeek = d.getDay();
+        var ids = getTrainingsForDate(dateStr, dayOfWeek);
+        totalTrainings += ids.length;
+        var isToday = dateStr === todayStr;
+
+        var trainingsHtml = ids.map(function(tid, idx) {
+          var t = lib.find(function(x) { return x.id === tid; });
+          if (!t) return '';
+          var done = comp[dateStr] && comp[dateStr][tid];
+          if (done) totalDone++;
+          return '<div class="week-training' + (done ? ' done' : '') + '">' +
+            '<div class="wt-name">' + escapeHtml(t.name) + '</div>' +
+            '<div class="wt-actions">' +
+            '<button class="wt-btn" onclick="toggleTrainingComplete(\'' + dateStr + '\',\'' + tid + '\')">' + (done ? '取消' : '完成') + '</button>' +
+            (idx > 0 ? '<button class="wt-btn" onclick="moveScheduleItem(\'' + dateStr + '\',' + idx + ',-1)">↑</button>' : '') +
+            (idx < ids.length - 1 ? '<button class="wt-btn" onclick="moveScheduleItem(\'' + dateStr + '\',' + idx + ',1)">↓</button>' : '') +
+            '<button class="wt-btn danger" onclick="removeFromSchedule(\'' + dateStr + '\',\'' + tid + '\')">删</button>' +
+            '</div></div>';
+        }).join('');
+
+        return '<div class="week-day' + (isToday ? ' today' : '') + '">' +
+          '<div class="week-day-label">' + getDayNameCN(dayOfWeek) + (isToday ? ' · 今天' : '') + '</div>' +
+          '<div class="week-day-date">' + (d.getMonth() + 1) + '/' + d.getDate() + '</div>' +
+          trainingsHtml +
+          '<button class="wt-add-btn" onclick="openTrainingModal(null,\'' + dateStr + '\')">+ 添加</button>' +
+          '</div>';
+      }).join('');
+
+      var weekGrid = document.getElementById('week-grid');
+      if (weekGrid) weekGrid.innerHTML = html;
+      var pct = totalTrainings > 0 ? Math.round(totalDone / totalTrainings * 100) : 0;
+      var weekProgress = document.getElementById('week-progress');
+      if (weekProgress) weekProgress.innerHTML = '本周完成进度：' + totalDone + '/' + totalTrainings + ' (' + pct + '%)' +
+        '<div class="week-progress-bar"><div class="week-progress-fill" style="width:' + pct + '%"></div></div>';
+    }
+
+    function renderWorkout() {
+      try { renderTodayTraining(); } catch(e) { console.error('renderTodayTraining:', e); }
+      try { renderLibrary(); } catch(e) { console.error('renderLibrary:', e); }
+      try { renderWeekSchedule(); } catch(e) { console.error('renderWeekSchedule:', e); }
+    }
+
+    /* ---- Modal ---- */
+    window.openTrainingModal = function(editId, presetDate) {
+      var modal = document.getElementById('training-modal');
+      if (!modal) return;
+      var title = document.getElementById('modal-title');
+      var idInput = document.getElementById('modal-id');
+      if (idInput) idInput.value = editId || '';
+
+      if (editId) {
+        var lib = getLibrary();
+        var t = lib.find(function(x) { return x.id === editId; });
+        if (t) {
+          if (title) title.textContent = '编辑训练';
+          var setVal = function(id, val) { var el = document.getElementById(id); if (el) el.value = val || ''; };
+          setVal('modal-name', t.name);
+          setVal('modal-url', t.videoUrl);
+          setVal('modal-platform', t.platform);
+          setVal('modal-type', t.type || '全身有氧');
+          setVal('modal-duration', t.duration);
+          setVal('modal-difficulty', t.difficulty || '中等');
+          setVal('modal-notes', t.notes);
+        }
+      } else {
+        if (title) title.textContent = '添加训练';
+        var setEmpty = function(id, def) { var el = document.getElementById(id); if (el) el.value = def || ''; };
+        setEmpty('modal-name', '');
+        setEmpty('modal-url', '');
+        setEmpty('modal-platform', '');
+        setEmpty('modal-type', '全身有氧');
+        setEmpty('modal-duration', '');
+        setEmpty('modal-difficulty', '中等');
+        setEmpty('modal-notes', '');
+      }
+      var dateEl = document.getElementById('modal-date');
+      if (dateEl) dateEl.value = presetDate || '';
+      var repeatEl = document.getElementById('modal-repeat');
+      if (repeatEl) repeatEl.value = 'none';
+      modal.classList.add('active');
+    };
+
+    window.closeTrainingModal = function() {
+      var modal = document.getElementById('training-modal');
+      if (modal) modal.classList.remove('active');
+    };
+
+    window.autoDetectPlatform = function() {
+      var urlEl = document.getElementById('modal-url');
+      var platformEl = document.getElementById('modal-platform');
+      if (!urlEl || !platformEl) return;
+      var detected = detectPlatform(urlEl.value);
+      if (detected) platformEl.value = detected;
+    };
+
+    window.saveTrainingFromModal = function() {
+      var getId = function(id) { var el = document.getElementById(id); return el ? el.value : ''; };
+      var id = getId('modal-id');
+      var name = getId('modal-name').trim();
+      if (!name) { alert('请输入训练名称'); return; }
+      var videoUrl = getId('modal-url').trim();
+      var platform = getId('modal-platform') || detectPlatform(videoUrl);
+      var type = getId('modal-type') || '全身有氧';
+      var duration = parseInt(getId('modal-duration')) || 0;
+      var difficulty = getId('modal-difficulty') || '中等';
+      var notes = getId('modal-notes').trim();
+      var date = getId('modal-date');
+      var repeat = getId('modal-repeat');
+
+      var lib = getLibrary();
+      if (id) {
+        var t = lib.find(function(x) { return x.id === id; });
+        if (t) { t.name = name; t.videoUrl = videoUrl; t.platform = platform; t.type = type; t.duration = duration; t.difficulty = difficulty; t.notes = notes; }
+      } else {
+        id = 'w' + Date.now();
+        lib.push({ id: id, name: name, videoUrl: videoUrl, platform: platform, type: type, duration: duration, difficulty: difficulty, notes: notes });
+      }
+      saveLibrary(lib);
+
+      if (date) {
+        if (repeat === 'weekly') {
+          var d = new Date(date);
+          var weekly = getWeekly();
+          var dow = String(d.getDay());
+          if (!weekly[dow]) weekly[dow] = [];
+          if (weekly[dow].indexOf(id) < 0) weekly[dow].push(id);
+          saveWeekly(weekly);
+        } else {
+          var sched = getSchedule();
+          if (!sched[date]) sched[date] = [];
+          if (sched[date].indexOf(id) < 0) sched[date].push(id);
+          saveSchedule(sched);
+        }
+      }
+      closeTrainingModal();
+      renderWorkout();
+    };
+
+    window.deleteTraining = function(id) {
+      if (!confirm('确定删除这个训练？')) return;
+      var lib = getLibrary().filter(function(t) { return t.id !== id; });
+      saveLibrary(lib);
+      var sched = getSchedule();
+      Object.keys(sched).forEach(function(k) { sched[k] = sched[k].filter(function(x) { return x !== id; }); });
+      saveSchedule(sched);
+      var weekly = getWeekly();
+      Object.keys(weekly).forEach(function(k) { weekly[k] = weekly[k].filter(function(x) { return x !== id; }); });
+      saveWeekly(weekly);
+      renderWorkout();
+    };
+
+    window.toggleScheduleForm = function(trainingId) {
+      var form = document.getElementById('sched-form-' + trainingId);
+      if (!form) return;
+      form.classList.toggle('active');
+      if (form.classList.contains('active')) {
+        var todayInput = form.querySelector('input[type="date"]');
+        if (todayInput && !todayInput.value) todayInput.value = getTodayKey();
+      }
+    };
+
+    window.confirmAddToSchedule = function(trainingId) {
+      var dateEl = document.getElementById('sched-date-' + trainingId);
+      var repeatEl = document.getElementById('sched-repeat-' + trainingId);
+      if (!dateEl || !dateEl.value) { alert('请选择日期'); return; }
+      var date = dateEl.value;
+      var repeat = repeatEl ? repeatEl.value : 'none';
+      if (repeat === 'weekly') {
+        var d = new Date(date);
+        var weekly = getWeekly();
+        var dow = String(d.getDay());
+        if (!weekly[dow]) weekly[dow] = [];
+        if (weekly[dow].indexOf(trainingId) < 0) weekly[dow].push(trainingId);
+        saveWeekly(weekly);
+      } else {
+        var sched = getSchedule();
+        if (!sched[date]) sched[date] = [];
+        if (sched[date].indexOf(trainingId) < 0) sched[date].push(trainingId);
+        saveSchedule(sched);
+      }
+      form = document.getElementById('sched-form-' + trainingId);
+      if (form) form.classList.remove('active');
+      renderWorkout();
+    };
+
+    window.removeFromSchedule = function(dateStr, trainingId) {
+      var sched = getSchedule();
+      if (sched[dateStr]) {
+        sched[dateStr] = sched[dateStr].filter(function(x) { return x !== trainingId; });
+        if (sched[dateStr].length === 0) delete sched[dateStr];
+        saveSchedule(sched);
+      }
+      var weekly = getWeekly();
+      var d = new Date(dateStr);
+      var dow = String(d.getDay());
+      if (weekly[dow]) {
+        weekly[dow] = weekly[dow].filter(function(x) { return x !== trainingId; });
+        if (weekly[dow].length === 0) delete weekly[dow];
+        saveWeekly(weekly);
+      }
+      renderWorkout();
+    };
+
+    window.toggleTrainingComplete = function(dateStr, trainingId) {
+      var comp = getCompletion();
+      if (!comp[dateStr]) comp[dateStr] = {};
+      if (comp[dateStr][trainingId]) {
+        delete comp[dateStr][trainingId];
+      } else {
+        comp[dateStr][trainingId] = true;
+      }
+      saveCompletion(comp);
+      renderWorkout();
+    };
+
+    window.moveScheduleItem = function(dateStr, index, direction) {
+      var sched = getSchedule();
+      var items = sched[dateStr] || [];
+      var newIndex = index + direction;
+      if (newIndex < 0 || newIndex >= items.length) return;
+      var temp = items[index];
+      items[index] = items[newIndex];
+      items[newIndex] = temp;
+      sched[dateStr] = items;
+      saveSchedule(sched);
+      renderWeekSchedule();
+    };
+
+    window.renderWorkout = renderWorkout;
+
+    /* ---- Init ---- */
+    if (!localStorage.getItem(LIB_KEY)) { saveLibrary(defaultLibrary); }
+    if (!localStorage.getItem(SCHED_KEY)) {
+      var initSched = {};
+      initSched[getTodayKey()] = ['w1'];
+      saveSchedule(initSched);
+    }
+    renderWorkout();
+  } catch(e) { console.error('Workout module error:', e); }
+})();
+</script>
+
+<!-- ===== Tab Switching Module ===== -->
+<script>
+(function() {
+  'use strict';
+  try {
+    window.setupTabs = function(containerId) {
+      var container = document.getElementById(containerId);
+      if (!container) return;
+      var btns = container.querySelectorAll('.tab-btn');
+      for (var i = 0; i < btns.length; i++) {
+        (function(btn) {
+          btn.addEventListener('click', function() {
+            var tabName = btn.dataset.tab;
+            var section = container.closest('section');
+            if (!section) return;
+            var allBtns = container.querySelectorAll('.tab-btn');
+            for (var j = 0; j < allBtns.length; j++) allBtns[j].classList.remove('active');
+            btn.classList.add('active');
+            var panels = section.querySelectorAll('.tab-panel');
+            for (var k = 0; k < panels.length; k++) {
+              if (panels[k].dataset.panel === tabName) {
+                panels[k].classList.add('active');
+              } else {
+                panels[k].classList.remove('active');
+              }
+            }
+          });
+        })(btns[i]);
+      }
+    };
+
+    setupTabs('workout-tabs');
+    setupTabs('radar-tabs');
+    setupTabs('finance-tabs');
+  } catch(e) { console.error('Tab module error:', e); }
+})();
+</script>
+
+<!-- ===== English Coach Module ===== -->
+<script>
+(function() {
+  'use strict';
+  try {
+    var FAV_KEY = 'atlas_english_favs';
+    var ANS_KEY = 'atlas_english_answer';
+
+    function getFavorites() { try { return JSON.parse(localStorage.getItem(FAV_KEY)) || []; } catch(e) { return []; } }
+    function saveFavorites(favs) { try { localStorage.setItem(FAV_KEY, JSON.stringify(favs)); } catch(e) {} }
+
+    window.collectExpr = function(btn) {
+      var en = btn.dataset.en || '';
+      var cn = btn.dataset.cn || '';
+      var src = btn.dataset.src || '';
+      var ctx = btn.dataset.ctx || '';
+      var favs = getFavorites();
+      if (favs.some(function(f) { return f.en === en; })) {
+        favs = favs.filter(function(f) { return f.en !== en; });
+        btn.classList.remove('collected');
+        btn.textContent = btn.textContent.replace('已收藏', '收藏');
+      } else {
+        favs.push({ id: 'fav' + Date.now(), en: en, cn: cn, src: src, ctx: ctx, mastered: false, added: getTodayKey() });
+        btn.classList.add('collected');
+        if (btn.textContent.indexOf('已收藏') < 0) {
+          btn.textContent = btn.textContent.replace('收藏', '已收藏');
+        }
+      }
+      saveFavorites(favs);
+    };
+
+    window.toggleFavPanel = function() {
+      var panel = document.getElementById('fav-panel');
+      var backdrop = document.getElementById('fav-backdrop');
+      if (panel) panel.classList.toggle('active');
+      if (backdrop) backdrop.classList.toggle('active');
+    };
+
+    window.renderFavorites = function() {
+      var favs = getFavorites();
+      var container = document.getElementById('fav-list');
+      if (!container) return;
+      if (favs.length === 0) {
+        container.innerHTML = '<div style="padding:40px 20px;text-align:center;color:var(--text-3);font-size:13px;">还没有收藏任何表达<br/>点击表达式旁边的"收藏"按钮开始积累</div>';
+        return;
+      }
+      container.innerHTML = favs.map(function(f) {
+        return '<div class="fav-item' + (f.mastered ? ' mastered' : '') + '">' +
+          '<div class="fav-en">' + escapeHtml(f.en) + '</div>' +
+          '<div class="fav-cn">' + escapeHtml(f.cn) + '</div>' +
+          '<div class="fav-src"><span class="fav-src-tag">' + escapeHtml(f.src) + '</span>' + (f.ctx ? ' · ' + escapeHtml(f.ctx) : '') + '</div>' +
+          '<div class="fav-actions">' +
+          '<button class="fav-action" onclick="copyFavorite(\'' + f.id + '\')">复制</button>' +
+          '<button class="fav-action" onclick="toggleMastered(\'' + f.id + '\')">' + (f.mastered ? '取消掌握' : '标记已掌握') + '</button>' +
+          '<button class="fav-action" onclick="removeFavorite(\'' + f.id + '\')">删除</button>' +
+          '</div></div>';
+      }).join('');
+    };
+
+    window.removeFavorite = function(id) {
+      var favs = getFavorites().filter(function(f) { return f.id !== id; });
+      saveFavorites(favs);
+      renderFavorites();
+      initCollectButtons();
+    };
+
+    window.toggleMastered = function(id) {
+      var favs = getFavorites();
+      var f = favs.find(function(x) { return x.id === id; });
+      if (f) { f.mastered = !f.mastered; saveFavorites(favs); renderFavorites(); }
+    };
+
+    window.copyFavorite = function(id) {
+      var favs = getFavorites();
+      var f = favs.find(function(x) { return x.id === id; });
+      if (!f) return;
+      var text = f.en + '\n' + f.cn;
+      try {
+        if (navigator.clipboard) {
+          navigator.clipboard.writeText(text);
+        } else {
+          var textarea = document.createElement('textarea');
+          textarea.value = text;
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+        }
+      } catch(e) {}
+    };
+
+    window.saveMyAnswer = function() {
+      var answerEl = document.getElementById('my-answer');
+      if (!answerEl) return;
+      try { localStorage.setItem(ANS_KEY, answerEl.value); alert('已保存'); } catch(e) {}
+    };
+
+    window.loadMyAnswer = function() {
+      try {
+        var answer = localStorage.getItem(ANS_KEY);
+        var answerEl = document.getElementById('my-answer');
+        if (answer && answerEl) { answerEl.value = answer; }
+        else { alert('暂无已保存的回答'); }
+      } catch(e) {}
+    };
+
+    window.compareWithSample = function() {
+      var sample = "I'm most proud of DearDay, a personal daily dashboard I designed and built. The idea came from a personal pain point — I was spending 30+ minutes every morning jumping between news apps, todo lists, and social media. I wanted to condense that into 3-5 minutes. I handled everything from product strategy to front-end development. The biggest challenge was deciding what NOT to include — I had to resist adding features and focus on making each module genuinely useful every day. I launched it with five modules: news brief, todo, workout, marketing radar, and English practice. The result was a tool I genuinely use every morning, and the process taught me how to design products around real daily behaviors rather than feature checklists.";
+      var mineEl = document.getElementById('my-answer');
+      var mine = mineEl ? mineEl.value.trim() : '';
+      var sampleEl = document.getElementById('compare-sample');
+      var mineCompareEl = document.getElementById('compare-mine');
+      var compareBox = document.getElementById('compare-box');
+      if (sampleEl) sampleEl.textContent = sample;
+      if (mineCompareEl) mineCompareEl.textContent = mine || '（请先在上方输入你的回答）';
+      if (compareBox) compareBox.style.display = 'grid';
+    };
+
+    function initCollectButtons() {
+      var favs = getFavorites();
+      var favEns = favs.map(function(f) { return f.en; });
+      var btns = document.querySelectorAll('.collect-btn');
+      for (var i = 0; i < btns.length; i++) {
+        var en = btns[i].dataset.en || '';
+        if (favEns.indexOf(en) >= 0) {
+          btns[i].classList.add('collected');
+          if (btns[i].textContent.indexOf('已收藏') < 0) {
+            btns[i].textContent = btns[i].textContent.replace('收藏', '已收藏');
+          }
+        }
+      }
+    }
+
+    window.initCollectButtons = initCollectButtons;
+
+    renderFavorites();
+    initCollectButtons();
+  } catch(e) { console.error('English Coach module error:', e); }
+})();
+</script>
+
+<!-- ===== Finance Module ===== -->
+<script>
+(function() {
+  'use strict';
+  try {
+    var FIN_FUND_KEY = 'atlas_finance_funds';
+    var FIN_POS_KEY = 'atlas_finance_positions';
+    var FIN_NOTE_KEY = 'atlas_finance_notes';
+    var FIN_DATA_DATE = '2026-07-24';
+    var liveDataInfo = null;
+
+    var defaultFunds = [
+      {
+        id: 'f1', name: '南方纳斯达克100指数发起(QDII)C', code: '016453',
+        company: '南方基金管理股份有限公司', type: '股票型 / 复制指数型 / QDII',
+        market: '美股', direction: '纳斯达克100指数',
+        nav: 2.2168, navDate: '2026-07-17', change: -1.38,
+        perf1m: -2.87, perf3m: 12.16, perf1y: 20.99,
+        risk: '高风险', manager: '张其思',
+        benchmark: '经汇率调整后的纳斯达克100指数收益率*95%+银行人民币活期存款利率(税后)*5%',
+        fee: '管理费 0.50% / 托管费 0.15% / 销售服务费 0.10%',
+        buyFee: '无申购费（C类）', redeemFee: 'N<7天 1.50%，N>=7天 0.00%',
+        scale: '约45.36亿元（2026/6/30）', established: '2022-11-29',
+        holdingDate: '2026-03-31（2026年Q1季报）',
+        holdings: [
+          { name: '英伟达 NVDA', pct: '约8%' }, { name: '苹果 AAPL', pct: '约7%' },
+          { name: '微软 MSFT', pct: '约5%' }, { name: '亚马逊 AMZN', pct: '约4%' },
+          { name: '特斯拉 TSLA', pct: '约4%' }, { name: 'Meta META', pct: '约3%' },
+          { name: '谷歌A GOOGL', pct: '约3%' }, { name: '谷歌C GOOG', pct: '约3%' },
+          { name: '博通 AVGO', pct: '约3%' }, { name: '沃尔玛 WMT', pct: '约3%' }
+        ],
+        url: 'https://www.nffund.com/main/jjcp/fundproduct/016453.shtml', status: 'hold', custom: false
+      },
+      {
+        id: 'f2', name: '万家纳斯达克100指数发起式(QDII)A', code: '019441',
+        company: '万家基金管理有限公司', type: 'QDII / 指数型',
+        market: '美股', direction: '纳斯达克100指数',
+        nav: 1.6285, navDate: '2026-07-23', change: -1.81,
+        perf1m: -3.31, perf3m: 5.15, perf1y: 15.23,
+        risk: '中高风险(R4)', manager: '杨坤、贺方舟',
+        benchmark: '纳斯达克100指数收益率(经估值汇率调整)*95%+银行活期存款利率(税后)*5%',
+        fee: '管理费 0.50% / 托管费 0.15%',
+        buyFee: '1.00%（<100万），0.60%（100-300万），0.40%（300-500万），>=500万 1000元/笔',
+        redeemFee: 'N<=6天 1.50%，7-29天 0.10%，N>=30天 0.00%',
+        scale: '约9.1亿元（2026/6/30）', established: '2023-09-27',
+        holdingDate: '2026-03-31（2026年Q1季报）',
+        holdings: [
+          { name: '英伟达 NVDA', pct: '8.19%' }, { name: '苹果 AAPL', pct: '7.20%' },
+          { name: '微软 MSFT', pct: '5.31%' }, { name: '亚马逊 AMZN', pct: '4.32%' },
+          { name: '特斯拉 TSLA', pct: '3.59%' }, { name: 'Meta META', pct: '3.26%' },
+          { name: '谷歌A GOOGL', pct: '3.24%' }, { name: '沃尔玛 WMT', pct: '3.24%' },
+          { name: '谷歌C GOOG', pct: '3.02%' }, { name: '博通 AVGO', pct: '2.84%' }
+        ],
+        url: 'https://www.wjasset.com/products/qdii/019441/', status: 'hold', custom: false
+      },
+      {
+        id: 'f3', name: '建信新兴市场混合(QDII)C', code: '018147',
+        company: '建信基金管理有限责任公司', type: '混合型 / 偏股混合型 / QDII',
+        market: '新兴市场', direction: 'MSCI新兴市场指数成分股',
+        nav: 2.4090, navDate: '2026-07-23', change: 0.84,
+        perf1m: -8.89, perf3m: 21.24, perf1y: 59.85,
+        risk: '中高风险', manager: '李博涵、程星烨、房乐',
+        benchmark: 'MSCI Emerging Markets Index (Net Total Return)',
+        fee: '管理费 1.50% / 托管费 0.25%（具体以招募说明书为准）',
+        buyFee: '无申购费（C类）', redeemFee: 'N<7天 1.50%，N>=7天 0.00%（C类）',
+        scale: '约52.24亿元（2026/3/31）', established: '2023-03-17',
+        holdingDate: '2026-03-31（2026年Q1季报）',
+        holdings: [
+          { name: '注：偏股混合型，持仓以新兴市场股票为主', pct: '' },
+          { name: '具体持仓请见基金季报', pct: '' }
+        ],
+        url: 'https://www.ccbfund.cn/', status: 'hold', custom: false
+      },
+      {
+        id: 'f4', name: '易方达信息产业混合A', code: '001513',
+        company: '易方达基金管理有限公司', type: '混合型 / 偏股混合型',
+        market: 'A股', direction: '信息产业（TMT）',
+        nav: 8.4080, navDate: '2026-07-24', change: -1.50,
+        perf1m: -16.42, perf3m: 22.47, perf1y: 165.22,
+        risk: '中高风险', manager: '郑希',
+        benchmark: '中证TMT产业主题指数收益率*85%+中债-总全价(总值)指数收益率*15%',
+        fee: '管理费 1.20% / 托管费 0.20%',
+        buyFee: '1.50%（<100万），0.30%（200-500万），>=500万 1000元/笔',
+        redeemFee: 'N<7天 1.50%，7-29天 0.75%，30-364天 0.50%，365-729天 0.25%，N>=730天 0.00%',
+        scale: '约52.10亿元（2026/3/31）', established: '2016-09-27',
+        holdingDate: '2026-03-31（2026年Q1季报）',
+        holdings: [
+          { name: '新易盛 300502', pct: '8.69%' }, { name: '中际旭创 300308', pct: '8.38%' },
+          { name: '源杰科技 688498', pct: '7.48%' }, { name: '宁德时代 300750', pct: '4.53%' },
+          { name: '鼎泰高科 301377', pct: '4.17%' }, { name: '东山精密 002384', pct: '3.70%' },
+          { name: '亨通光电 600487', pct: '3.10%' }, { name: '长飞光纤 601869', pct: '2.93%' },
+          { name: '光库科技 300620', pct: '2.82%' }, { name: '中天科技 600522', pct: '2.70%' }
+        ],
+        url: 'https://www.efunds.com.cn/fund/001513.shtml', status: 'hold', custom: false
+      }
+    ];
+
+    function getFunds() {
+      try { var s = localStorage.getItem(FIN_FUND_KEY); return s ? JSON.parse(s) : defaultFunds; }
+      catch(e) { return defaultFunds; }
+    }
+    function saveFunds(funds) { try { localStorage.setItem(FIN_FUND_KEY, JSON.stringify(funds)); } catch(e) {} }
+    function getPositions() { try { return JSON.parse(localStorage.getItem(FIN_POS_KEY)) || {}; } catch(e) { return {}; } }
+    function savePositions(pos) { try { localStorage.setItem(FIN_POS_KEY, JSON.stringify(pos)); } catch(e) {} }
+    function getNotes() { try { return JSON.parse(localStorage.getItem(FIN_NOTE_KEY)) || {}; } catch(e) { return {}; } }
+    function saveNotes(notes) { try { localStorage.setItem(FIN_NOTE_KEY, JSON.stringify(notes)); } catch(e) {} }
+
+    function fmtPct(v) {
+      if (v === null || v === undefined || isNaN(v)) return '--';
+      var sign = v > 0 ? '+' : '';
+      return sign + v.toFixed(2) + '%';
+    }
+    function fmtNav(v) {
+      if (v === null || v === undefined || isNaN(v)) return '--';
+      return v.toFixed(4);
+    }
+    function pctClass(v) {
+      if (v === null || v === undefined || isNaN(v)) return 'fin-flat';
+      if (v > 0) return 'fin-up';
+      if (v < 0) return 'fin-down';
+      return 'fin-flat';
+    }
+
+    function renderFundAnalysis(f) {
+      var analyses = {
+        'f1': {
+          today: '净值 ' + fmtNav(f.nav) + '，单日 ' + fmtPct(f.change) + '（净值日期 ' + escapeHtml(f.navDate || '--') + '）。',
+          reason: '主要受纳斯达克100指数波动影响。当日美股科技股调整，英伟达、苹果等权重股下跌带动指数下行。QDII基金净值存在1个工作日滞后。',
+          meaning: '该基金跟踪纳斯达克100指数，风险暴露直接来自美国大型科技股整体走势及人民币兑美元汇率。',
+          watch: '美联储7月议息会议、美国通胀数据、科技巨头财报（尤其是AI相关业务增速）、人民币汇率。',
+          source: '已确认事实：基金净值及日期（来源：基金公司官网/新浪财经）。合理解释：与纳斯达克100指数走势关联。'
+        },
+        'f2': {
+          today: '净值 ' + fmtNav(f.nav) + '，单日 ' + fmtPct(f.change) + '（净值日期 ' + escapeHtml(f.navDate || '--') + '）。',
+          reason: '与南方纳指100C同源——均跟踪纳斯达克100指数，当日波动原因一致。A类份额因有申购费，短期交易成本略高。',
+          meaning: '与南方纳指100C风险暴露高度重合，同时持有未显著增加分散度，但A类适合长期持有（无销售服务费）。',
+          watch: '与南方纳指100C相同：美联储政策、科技股财报、汇率。额外关注：A/C类费率差异是否仍然合理。',
+          source: '已确认事实：基金净值及日期（来源：万家基金官网/新浪财经）。合理解释：与南方纳指100C跟踪同一指数。'
+        },
+        'f3': {
+          today: '净值 ' + fmtNav(f.nav) + '，单日 ' + fmtPct(f.change) + '（净值日期 ' + escapeHtml(f.navDate || '--') + '）。',
+          reason: '作为主动管理的新兴市场基金，受MSCI新兴市场指数成分股走势影响。印度、东南亚、拉美等市场表现及汇率变动共同决定净值。',
+          meaning: '该基金在组合中提供除美国科技股之外的分散化敞口，但新兴市场波动性较高，且基金经理主动管理风格可能带来额外不确定性。',
+          watch: 'MSCI新兴市场指数走势、主要新兴市场经济体政策变化、美元指数走势、基金经理持仓调整（季报）。',
+          source: '已确认事实：基金净值及日期（来源：新浪财经/建信基金）。合理解释：与新兴市场股市整体走势关联。'
+        },
+        'f4': {
+          today: '净值 ' + fmtNav(f.nav) + '，单日 ' + fmtPct(f.change) + '（净值日期 ' + escapeHtml(f.navDate || '--') + '）。',
+          reason: '重仓AI算力链（新易盛、中际旭创、源杰科技），近期受A股科技板块调整影响较大。近1月跌幅显著，但近1年涨幅仍超过160%。',
+          meaning: '该基金在组合中代表A股TMT方向，与QDII基金形成市场分散，但行业集中度极高（信息产业占比超80%）。',
+          watch: 'AI算力产业链景气度、A股科技板块估值变化、基金经理郑希的持仓调整、中证TMT指数走势。',
+          source: '已确认事实：基金净值及日期（来源：易方达官网/新浪财经）。合理解释：与A股TMT板块走势关联。'
+        }
+      };
+      var a = analyses[f.id] || {
+        today: '净值 ' + fmtNav(f.nav) + '，单日 ' + fmtPct(f.change) + '（净值日期 ' + escapeHtml(f.navDate || '--') + '）。',
+        reason: '请参考基金定期报告和市场分析。',
+        meaning: '请结合自身投资逻辑评估。',
+        watch: '关注基金公告和市场动态。',
+        source: '数据来源：用户手动录入。'
+      };
+      var html = '<div class="fund-analysis">';
+      html += '<div class="fa-label">今日表现</div><div class="fa-text">' + a.today + '</div>';
+      html += '<div class="fa-label">主要原因</div><div class="fa-text">' + a.reason + '</div>';
+      html += '<div class="fa-label">对我的意义</div><div class="fa-text">' + a.meaning + '</div>';
+      html += '<div class="fa-label">接下来关注</div><div class="fa-text">' + a.watch + '</div>';
+      html += '<div class="fa-source">' + a.source + '</div>';
+      html += '</div>';
+      return html;
+    }
+
+    function renderFundHoldings(f) {
+      if (!f.holdings || f.holdings.length === 0) return '';
+      var html = '<div class="fund-holdings">';
+      html += '<div class="fa-label">前十大持仓（' + escapeHtml(f.holdingDate || '') + '）</div>';
+      f.holdings.forEach(function(h) {
+        html += '<div class="holding-row"><span class="holding-name">' + escapeHtml(h.name) + '</span><span class="holding-pct">' + escapeHtml(h.pct) + '</span></div>';
+      });
+      html += '<div class="fa-source" style="margin-top:4px;">数据来源：基金定期报告（季报/年报），非实时持仓。</div>';
+      html += '</div>';
+      return html;
+    }
+
+    function renderFundCustomNote(f, note) {
+      var html = '<div class="fund-custom-note">';
+      html += '<div class="fcn-label">我为什么持有</div>';
+      html += '<textarea class="fcn-textarea" id="note-reason-' + f.id + '" placeholder="如：长期看好美国科技 / 用于分散中国市场风险 / 定投" onchange="saveCustomNote(\'' + f.id + '\', \'reason\')">' + escapeHtml(note.reason || '') + '</textarea>';
+      html += '<div class="fcn-label" style="margin-top:8px;">退出条件</div>';
+      html += '<textarea class="fcn-textarea" id="note-exit-' + f.id + '" placeholder="如：纳斯达克100 PE超过35倍时停止定投 / 美联储大幅加息时重新评估" onchange="saveCustomNote(\'' + f.id + '\', \'exit\')">' + escapeHtml(note.exit || '') + '</textarea>';
+      html += '</div>';
+      return html;
+    }
+
+    function renderFundDetail(f) {
+      var notes = getNotes();
+      var note = notes[f.id] || {};
+      var positions = getPositions();
+      var pos = positions[f.id];
+      var html = '<div class="fund-info-grid">';
+      html += '<div class="fi-item"><div class="fi-label">基金公司</div><div class="fi-value">' + escapeHtml(f.company) + '</div></div>';
+      html += '<div class="fi-item"><div class="fi-label">基金类型</div><div class="fi-value">' + escapeHtml(f.type) + '</div></div>';
+      html += '<div class="fi-item"><div class="fi-label">主要市场</div><div class="fi-value">' + escapeHtml(f.market) + '</div></div>';
+      html += '<div class="fi-item"><div class="fi-label">投资方向</div><div class="fi-value">' + escapeHtml(f.direction) + '</div></div>';
+      html += '<div class="fi-item"><div class="fi-label">最新净值</div><div class="fi-value">' + fmtNav(f.nav) + ' <span style="font-size:10px;color:var(--text-3);">（' + escapeHtml(f.navDate || '--') + '）</span></div></div>';
+      html += '<div class="fi-item"><div class="fi-label">单日涨跌</div><div class="fi-value ' + pctClass(f.change) + '">' + fmtPct(f.change) + '</div></div>';
+      html += '<div class="fi-item"><div class="fi-label">近1月</div><div class="fi-value ' + pctClass(f.perf1m) + '">' + fmtPct(f.perf1m) + '</div></div>';
+      html += '<div class="fi-item"><div class="fi-label">近3月</div><div class="fi-value ' + pctClass(f.perf3m) + '">' + fmtPct(f.perf3m) + '</div></div>';
+      html += '<div class="fi-item"><div class="fi-label">近1年</div><div class="fi-value ' + pctClass(f.perf1y) + '">' + fmtPct(f.perf1y) + '</div></div>';
+      html += '<div class="fi-item"><div class="fi-label">风险等级</div><div class="fi-value">' + escapeHtml(f.risk) + '</div></div>';
+      html += '<div class="fi-item"><div class="fi-label">基金经理</div><div class="fi-value">' + escapeHtml(f.manager) + '</div></div>';
+      html += '<div class="fi-item"><div class="fi-label">成立日期</div><div class="fi-value">' + escapeHtml(f.established || '--') + '</div></div>';
+      html += '<div class="fi-item"><div class="fi-label">持仓披露日期</div><div class="fi-value">' + escapeHtml(f.holdingDate || '--') + '</div></div>';
+      html += '<div class="fi-item"><div class="fi-label">基金规模</div><div class="fi-value">' + escapeHtml(f.scale || '--') + '</div></div>';
+      html += '</div>';
+      html += '<div style="margin-top:10px;font-size:12px;color:var(--text-2);"><strong>业绩基准：</strong>' + escapeHtml(f.benchmark || '--') + '</div>';
+      html += '<div style="margin-top:4px;font-size:12px;color:var(--text-2);"><strong>费率：</strong>' + escapeHtml(f.fee || '--') + '</div>';
+      html += '<div style="margin-top:4px;font-size:12px;color:var(--text-2);"><strong>申购费：</strong>' + escapeHtml(f.buyFee || '--') + '</div>';
+      html += '<div style="margin-top:4px;font-size:12px;color:var(--text-2);"><strong>赎回费：</strong>' + escapeHtml(f.redeemFee || '--') + '</div>';
+      if (pos) {
+        html += '<div style="margin-top:10px;padding:10px;background:var(--highlight);border-radius:6px;border:1px solid var(--border-light);">';
+        html += '<div style="font-size:10px;font-weight:700;color:var(--text-3);margin-bottom:6px;">我的持仓</div>';
+        html += '<div style="font-size:12px;color:var(--text-2);">持有金额：' + (pos.amount || '--') + ' 元';
+        if (pos.shares) html += ' | 份额：' + pos.shares;
+        if (pos.cost) html += ' | 成本：' + pos.cost;
+        if (pos.buyDate) html += ' | 首次买入：' + pos.buyDate;
+        html += '</div>';
+        if (pos.dingtouAmount) {
+          html += '<div style="font-size:12px;color:var(--text-2);margin-top:2px;">定投：' + pos.dingtouAmount + ' 元 / ' + (pos.dingtouFreq || '') + '</div>';
+        }
+        if (pos.note) {
+          html += '<div style="font-size:12px;color:var(--text-2);margin-top:2px;">备注：' + escapeHtml(pos.note) + '</div>';
+        }
+        html += '</div>';
+      }
+      html += renderFundAnalysis(f);
+      html += renderFundHoldings(f);
+      html += renderFundCustomNote(f, note);
+      html += '<div class="fund-actions">';
+      html += '<button class="btn-outline" onclick="event.stopPropagation();openPositionModal(\'' + f.id + '\')">' + (pos ? '修改持仓' : '录入持仓') + '</button>';
+      html += '<button class="btn-outline" onclick="event.stopPropagation();toggleFundStatus(\'' + f.id + '\')">' + (f.status === 'hold' ? '标记为观察' : '标记为持有') + '</button>';
+      if (f.custom) {
+        html += '<button class="btn-outline" onclick="event.stopPropagation();editCustomFund(\'' + f.id + '\')">编辑</button>';
+        html += '<button class="btn-outline" onclick="event.stopPropagation();deleteFund(\'' + f.id + '\')">删除</button>';
+      }
+      if (f.url) {
+        html += '<a class="fund-link" href="' + escapeHtml(f.url) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">官方页面</a>';
+      }
+      html += '</div>';
+      return html;
+    }
+
+    function renderFinanceOverview() {
+      var funds = getFunds();
+      var upCount = 0, downCount = 0;
+      var maxImpact = null, maxAbsChange = 0;
+      funds.forEach(function(f) {
+        if (f.change > 0) upCount++;
+        else if (f.change < 0) downCount++;
+        if (Math.abs(f.change) > maxAbsChange) { maxAbsChange = Math.abs(f.change); maxImpact = f; }
+      });
+      var statsEl = document.getElementById('fin-overview-stats');
+      if (statsEl) {
+        var statsHtml = '<div class="fin-ov-cell"><div class="fin-ov-label">上涨 / 下跌</div>' +
+          '<div class="fin-ov-value"><span class="fin-up">' + upCount + '</span> / <span class="fin-down">' + downCount + '</span></div>' +
+          '<div class="fin-ov-sub">共 ' + funds.length + ' 只基金</div></div>';
+        statsHtml += '<div class="fin-ov-cell"><div class="fin-ov-label">今日影响最大</div>' +
+          '<div class="fin-ov-value ' + pctClass(maxImpact ? maxImpact.change : 0) + '">' + fmtPct(maxImpact ? maxImpact.change : 0) + '</div>' +
+          '<div class="fin-ov-sub">' + (maxImpact ? maxImpact.name.substring(0, 12) : '--') + '</div></div>';
+        statsHtml += '<div class="fin-ov-cell"><div class="fin-ov-label">主要暴露方向</div>' +
+          '<div class="fin-ov-value" style="font-size:14px;">美国大型科技股</div>' +
+          '<div class="fin-ov-sub">3只QDII基金集中于美股科技</div></div>';
+        statsEl.innerHTML = statsHtml;
+      }
+      var riskEl = document.getElementById('fin-alert-risk');
+      if (riskEl) riskEl.innerHTML = '<span class="fin-alert-label">持仓提醒</span>南方纳指100C与万家纳指100A同时跟踪纳斯达克100指数，前十大持仓高度重合（重合度高），同时持有并未显著增加分散度。';
+      var eventEl = document.getElementById('fin-alert-event');
+      if (eventEl) eventEl.innerHTML = '<span class="fin-alert-label">今日关注</span>美联储7月议息会议临近，美股科技股波动加大；人民币汇率走势影响QDII基金实际收益。';
+      var listEl = document.getElementById('fin-overview-list');
+      if (listEl) {
+        listEl.innerHTML = funds.map(function(f) {
+          return '<div class="fund-row" id="ov-row-' + f.id + '">' +
+            '<div class="fund-row-header" onclick="toggleFundRow(\'ov-row-' + f.id + '\')">' +
+            '<span class="fund-name">' + escapeHtml(f.name) + '</span>' +
+            '<span class="fund-code">' + escapeHtml(f.code) + '</span>' +
+            '<span class="fund-nav">' + fmtNav(f.nav) + '</span>' +
+            '<span class="fund-change ' + pctClass(f.change) + '">' + fmtPct(f.change) + '</span>' +
+            '<span class="fund-expand">展开</span></div>' +
+            '<div class="fund-detail">' + renderFundDetail(f) + '</div></div>';
+        }).join('');
+      }
+      var srcEl = document.getElementById('fin-data-source');
+      if (srcEl) srcEl.textContent = liveDataInfo || ('数据来源：各基金公司官网及定期报告 | 净值截止：' + FIN_DATA_DATE + ' | 当前为静态数据，非实时');
+      var timeEl = document.getElementById('fin-updated-time');
+      if (timeEl) timeEl.textContent = '更新于 ' + FIN_DATA_DATE;
+    }
+
+    function renderFundsList() {
+      var funds = getFunds();
+      var listEl = document.getElementById('fin-funds-list');
+      if (!listEl) return;
+      listEl.innerHTML = funds.map(function(f) {
+        return '<div class="fund-row" id="fl-row-' + f.id + '">' +
+          '<div class="fund-row-header" onclick="toggleFundRow(\'fl-row-' + f.id + '\')">' +
+          '<span class="fund-name">' + escapeHtml(f.name) + '</span>' +
+          '<span class="fund-status-tag ' + f.status + '">' + (f.status === 'hold' ? '持有' : '观察') + '</span>' +
+          '<span class="fund-code">' + escapeHtml(f.code) + '</span>' +
+          '<span class="fund-nav">' + fmtNav(f.nav) + '</span>' +
+          '<span class="fund-change ' + pctClass(f.change) + '">' + fmtPct(f.change) + '</span>' +
+          '<span class="fund-expand">展开</span></div>' +
+          '<div class="fund-detail">' + renderFundDetail(f) + '</div></div>';
+      }).join('');
+    }
+
+    function renderOverlap() {
+      var el = document.getElementById('fin-overlap-analysis');
+      if (!el) return;
+      var html = '<div class="overlap-section"><div class="overlap-title">持仓重合分析</div>';
+      html += '<div class="overlap-card"><div class="oc-pair">南方纳指100C（016453） vs 万家纳指100A（019441）<span class="oc-badge high">重合度高</span></div>';
+      html += '<div class="oc-detail">';
+      html += '<div class="oc-detail-row"><span class="oc-key">跟踪标的</span>相同——纳斯达克100指数</div>';
+      html += '<div class="oc-detail-row"><span class="oc-key">前十大持仓</span>高度重合：英伟达、苹果、微软、亚马逊、特斯拉、Meta、谷歌等均为共同重仓</div>';
+      html += '<div class="oc-detail-row"><span class="oc-key">投资风格</span>均为被动指数复制，风格一致</div>';
+      html += '<div class="oc-detail-row"><span class="oc-key">分散度</span>同时持有未显著增加分散度，主要区别在于费率结构</div>';
+      html += '<div class="oc-detail-row"><span class="oc-key">费率差异</span>C类无申购费但有0.10%销售服务费/年；A类有1.00%申购费但无销售服务费。短期持有选C类，长期持有选A类</div>';
+      html += '<div class="oc-detail-row"><span class="oc-key">规模差异</span>南方45.36亿 vs 万家9.1亿，南方流动性更好</div>';
+      html += '<div class="oc-detail-row"><span class="oc-key">建议</span>如果两只同时定投，实际是在加倍押注同一指数。可考虑保留一只，或明确区分持有目的（如A类长期定投、C类短期交易）</div>';
+      html += '</div></div>';
+      html += '<div class="overlap-card"><div class="oc-pair">南方/万家纳指100 vs 建信新兴市场<span class="oc-badge low">重合度低</span></div>';
+      html += '<div class="oc-detail">';
+      html += '<div class="oc-detail-row"><span class="oc-key">跟踪标的</span>不同——纳斯达克100指数 vs MSCI新兴市场指数</div>';
+      html += '<div class="oc-detail-row"><span class="oc-key">持仓重合</span>低——美股大型科技股 vs 新兴市场多国股票</div>';
+      html += '<div class="oc-detail-row"><span class="oc-key">分散度</span>有效分散——不同市场、不同风格</div>';
+      html += '</div></div>';
+      html += '<div class="overlap-card"><div class="oc-pair">纳指100 vs 易方达信息产业<span class="oc-badge low">重合度低</span></div>';
+      html += '<div class="oc-detail">';
+      html += '<div class="oc-detail-row"><span class="oc-key">投资市场</span>不同——美股 vs A股</div>';
+      html += '<div class="oc-detail-row"><span class="oc-key">行业方向</span>有部分主题关联——均偏科技，但具体公司不同（美股大型科技股 vs A股AI算力/TMT）</div>';
+      html += '<div class="oc-detail-row"><span class="oc-key">分散度</span>市场分散有效，但行业上仍偏科技</div>';
+      html += '</div></div>';
+      html += '</div>';
+      html += '<div class="overlap-section"><div class="overlap-title">组合暴露分析</div>';
+      html += '<div class="exposure-list">';
+      html += '<div class="exp-item"><span class="exp-dot high"></span>美国大型科技股 — 2只纳指100基金高度集中</div>';
+      html += '<div class="exp-item"><span class="exp-dot high"></span>人民币与外币汇率 — 3只QDII基金均受汇率影响</div>';
+      html += '<div class="exp-item"><span class="exp-dot mid"></span>中国科技与信息产业 — 易方达信息产业</div>';
+      html += '<div class="exp-item"><span class="exp-dot mid"></span>新兴市场 — 建信新兴市场</div>';
+      html += '<div class="exp-item"><span class="exp-dot mid"></span>主动管理风险 — 建信和易方达为主动管理</div>';
+      html += '<div class="exp-item"><span class="exp-dot mid"></span>行业集中风险 — 整体偏科技/TMT</div>';
+      html += '<div class="exp-item"><span class="exp-dot low"></span>债券与固定收益 — 无</div>';
+      html += '<div class="exp-item"><span class="exp-dot low"></span>消费与防御 — 无</div>';
+      html += '</div>';
+      html += '<div style="margin-top:10px;font-size:12px;color:var(--text-2);">组合整体偏成长风格，集中于科技赛道。如需平衡，可考虑增加消费、医疗或债券类资产。</div>';
+      html += '</div>';
+      el.innerHTML = html;
+      var expEl = document.getElementById('fin-exposure-analysis');
+      if (expEl) expEl.innerHTML = '';
+    }
+
+    var finNewsFilter = 'all';
+    var finNewsData = [
+      { id: 'n1', fund: 'f1,f2', title: '美联储7月议息会议临近，市场预期降息概率变化', date: '2026-07-24', impact: 'mid', duration: 'mid', detail: '美联储将于下周公布利率决议。当前市场对7月降息预期存在分歧，利率期货显示概率约60%。如降息，有利于纳斯达克100指数；如维持不变，科技股可能继续承压。', related: '南方纳指100C、万家纳指100A', source: 'CME FedWatch / 各财经媒体' },
+      { id: 'n2', fund: 'f1,f2', title: '纳斯达克100指数近期回调，科技巨头财报季开始', date: '2026-07-23', impact: 'neg', duration: 'short', detail: '纳斯达克100指数近一周下跌约3%。英伟达、微软等权重股将陆续发布财报，AI业务增速和资本开支指引是核心看点。', related: '南方纳指100C、万家纳指100A', source: '纳斯达克官网 / 各公司投资者关系页面' },
+      { id: 'n3', fund: 'f1,f2,f3', title: '人民币兑美元汇率波动，影响QDII基金收益', date: '2026-07-24', impact: 'neu', duration: 'mid', detail: '人民币近期双向波动。人民币贬值时QDII基金以人民币计价的净值上升（汇率收益），反之亦然。需关注央行中间价和外汇市场动态。', related: '南方纳指100C、万家纳指100A、建信新兴市场', source: '中国外汇交易中心 / 人民银行公告' },
+      { id: 'n4', fund: 'f4', title: 'A股TMT板块调整，AI算力链个股波动加大', date: '2026-07-24', impact: 'neg', duration: 'short', detail: '中证TMT指数近一月下跌超10%。新易盛、中际旭创等易方达信息产业重仓股回调明显，但AI算力长期需求逻辑未变。', related: '易方达信息产业混合A', source: 'Wind / 各券商研报' },
+      { id: 'n5', fund: 'f4', title: '易方达信息产业混合限制大额申购，单日上限1万元', date: '2026-06-24', impact: 'neu', duration: 'mid', detail: '基金公司公告调整大额申购限制，单日累计购买上限1万元。通常因基金规模增长较快或基金经理希望控制建仓节奏。', related: '易方达信息产业混合A', source: '易方达基金公告' },
+      { id: 'n6', fund: 'f3', title: 'MSCI新兴市场指数近期走势及印度市场表现', date: '2026-07-22', impact: 'pos', duration: 'mid', detail: '新兴市场股票近期有所反弹，印度市场表现突出。建信新兴市场基金近半年涨幅近60%，但近一月回调约9%。', related: '建信新兴市场混合(QDII)C', source: 'MSCI官网 / 各财经媒体' },
+      { id: 'n7', fund: 'f2', title: '万家纳指100取消总规模上限，恢复大额申购', date: '2026-07-14', impact: 'pos', duration: 'short', detail: '万家基金公告取消该基金总规模上限并调整大额申购限制，意味着QDII额度有所放宽，定投可恢复正常额度。', related: '万家纳指100A', source: '万家基金公告' },
+      { id: 'n8', fund: 'f1,f2', title: '英伟达等AI芯片公司财报即将发布', date: '2026-07-25', impact: 'neu', duration: 'short', detail: '英伟达作为纳斯达克100第一大权重股（约8%），其财报对指数影响显著。市场关注AI芯片出货量、数据中心收入增速和下季度指引。', related: '南方纳指100C、万家纳指100A', source: '各公司投资者关系日历' }
+    ];
+
+    function renderFinNews() {
+      var filterEl = document.getElementById('fin-news-filter');
+      var funds = getFunds();
+      if (filterEl) {
+        var filterHtml = '<button class="news-filter-btn ' + (finNewsFilter === 'all' ? 'active' : '') + '" onclick="setNewsFilter(\'all\')">全部</button>';
+        funds.forEach(function(f) {
+          filterHtml += '<button class="news-filter-btn ' + (finNewsFilter === f.id ? 'active' : '') + '" onclick="setNewsFilter(\'' + f.id + '\')">' + escapeHtml(f.name.substring(0, 8)) + '</button>';
+        });
+        filterEl.innerHTML = filterHtml;
+      }
+      var filtered = finNewsData.filter(function(n) {
+        if (finNewsFilter === 'all') return true;
+        return n.fund.indexOf(finNewsFilter) >= 0;
+      });
+      var impactLabel = { pos: '偏正面', neg: '偏负面', neu: '中性', short: '短期', mid: '中长期' };
+      var impactClass = { pos: 'pos', neg: 'neg', neu: 'neu', short: 'short', mid: 'mid' };
+      var listEl = document.getElementById('fin-news-list');
+      if (listEl) {
+        listEl.innerHTML = filtered.map(function(n) {
+          return '<div class="fin-news-item">' +
+            '<div class="fn-headline">' + escapeHtml(n.title) + '</div>' +
+            '<div class="fn-meta"><span>' + n.date + '</span>' +
+            '<span class="fn-impact ' + impactClass[n.impact] + '">' + impactLabel[n.impact] + '</span>' +
+            '<span class="fn-impact ' + impactClass[n.duration] + '">' + impactLabel[n.duration] + '</span></div>' +
+            '<div class="fn-detail">' + escapeHtml(n.detail) + '</div>' +
+            '<div class="fn-related">关联基金：' + escapeHtml(n.related) + '</div>' +
+            '<div class="fn-source">来源：' + escapeHtml(n.source) + '</div></div>';
+        }).join('');
+      }
+    }
+
+    function renderRecords() {
+      var positions = getPositions();
+      var funds = getFunds();
+      var hasRecords = false;
+      var rows = '';
+      funds.forEach(function(f) {
+        var pos = positions[f.id];
+        if (pos && (pos.amount || pos.shares || pos.cost || pos.dingtouAmount)) {
+          hasRecords = true;
+          rows += '<tr>';
+          rows += '<td>' + escapeHtml(f.name) + '</td>';
+          rows += '<td>' + (pos.amount ? pos.amount + ' 元' : '--') + '</td>';
+          rows += '<td>' + (pos.shares || '--') + '</td>';
+          rows += '<td>' + (pos.cost || '--') + '</td>';
+          rows += '<td>' + (pos.buyDate || '--') + '</td>';
+          rows += '<td>' + (pos.dingtouAmount ? pos.dingtouAmount + ' 元 / ' + (pos.dingtouFreq || '') : '未定投') + '</td>';
+          rows += '<td><span class="record-action" onclick="openPositionModal(\'' + f.id + '\')">修改</span> <span class="record-action" onclick="deletePosition(\'' + f.id + '\')" style="color:var(--danger);">删除</span></td>';
+          rows += '</tr>';
+        }
+      });
+      var tableEl = document.getElementById('fin-records-table');
+      if (!tableEl) return;
+      if (!hasRecords) {
+        tableEl.innerHTML = '<div class="record-empty">暂无持仓记录。点击右上角"录入持仓"开始记录。</div>';
+        return;
+      }
+      var html = '<table class="record-table"><thead><tr>';
+      html += '<th>基金</th><th>持有金额</th><th>份额</th><th>成本</th><th>首次买入</th><th>定投计划</th><th>操作</th>';
+      html += '</tr></thead><tbody>' + rows + '</tbody></table>';
+      tableEl.innerHTML = html;
+    }
+
+    function renderFinance() {
+      try { renderFinanceOverview(); } catch(e) { console.error('renderFinanceOverview:', e); }
+      try { renderFundsList(); } catch(e) { console.error('renderFundsList:', e); }
+      try { renderOverlap(); } catch(e) { console.error('renderOverlap:', e); }
+      try { renderFinNews(); } catch(e) { console.error('renderFinNews:', e); }
+      try { renderRecords(); } catch(e) { console.error('renderRecords:', e); }
+    }
+
+    /* ---- Window exposures ---- */
+    window.renderFinance = renderFinance;
+    window.setNewsFilter = function(filter) { finNewsFilter = filter; renderFinNews(); };
+
+    window.toggleFundRow = function(rowId) {
+      var row = document.getElementById(rowId);
+      if (row) row.classList.toggle('expanded');
+    };
+
+    window.toggleFundStatus = function(fundId) {
+      var funds = getFunds();
+      var f = funds.find(function(x) { return x.id === fundId; });
+      if (f) { f.status = f.status === 'hold' ? 'watch' : 'hold'; saveFunds(funds); renderFinance(); }
+    };
+
+    window.saveCustomNote = function(fundId, field) {
+      var notes = getNotes();
+      if (!notes[fundId]) notes[fundId] = {};
+      var el = document.getElementById('note-' + field + '-' + fundId);
+      if (el) { notes[fundId][field] = el.value; saveNotes(notes); }
+    };
+
+    window.openPositionModal = function(fundId) {
+      var funds = getFunds();
+      var f = fundId ? funds.find(function(x) { return x.id === fundId; }) : funds[0];
+      if (!f) return;
+      var setVal = function(id, val) { var el = document.getElementById(id); if (el) el.value = val || ''; };
+      setVal('pos-fund-id', f.id);
+      var nameEl = document.getElementById('pos-fund-name');
+      if (nameEl) nameEl.textContent = f.name + '（' + f.code + '）';
+      var positions = getPositions();
+      var pos = positions[f.id] || {};
+      setVal('pos-amount', pos.amount);
+      setVal('pos-shares', pos.shares);
+      setVal('pos-cost', pos.cost);
+      setVal('pos-buy-date', pos.buyDate);
+      setVal('pos-dingtou-amount', pos.dingtouAmount);
+      setVal('pos-dingtou-freq', pos.dingtouFreq);
+      setVal('pos-note', pos.note);
+      var modal = document.getElementById('fin-pos-modal');
+      if (modal) modal.classList.add('active');
+    };
+
+    window.closePositionModal = function() {
+      var modal = document.getElementById('fin-pos-modal');
+      if (modal) modal.classList.remove('active');
+    };
+
+    window.savePosition = function() {
+      var getVal = function(id) { var el = document.getElementById(id); return el ? el.value : ''; };
+      var fundId = getVal('pos-fund-id');
+      if (!fundId) return;
+      var positions = getPositions();
+      positions[fundId] = {
+        amount: parseFloat(getVal('pos-amount')) || null,
+        shares: parseFloat(getVal('pos-shares')) || null,
+        cost: parseFloat(getVal('pos-cost')) || null,
+        buyDate: getVal('pos-buy-date'),
+        dingtouAmount: parseFloat(getVal('pos-dingtou-amount')) || null,
+        dingtouFreq: getVal('pos-dingtou-freq'),
+        note: getVal('pos-note')
+      };
+      savePositions(positions);
+      closePositionModal();
+      renderFinance();
+    };
+
+    window.deletePosition = function(fundId) {
+      var positions = getPositions();
+      delete positions[fundId];
+      savePositions(positions);
+      renderFinance();
+    };
+
+    window.openAddFundModal = function() {
+      var setVal = function(id, val) { var el = document.getElementById(id); if (el) el.value = val || ''; };
+      setVal('add-fund-id', '');
+      var titleEl = document.getElementById('fin-add-title');
+      if (titleEl) titleEl.textContent = '添加基金';
+      ['add-fund-name','add-fund-code','add-fund-company','add-fund-type','add-fund-market','add-fund-direction','add-fund-nav','add-fund-nav-date','add-fund-change','add-fund-risk','add-fund-url','add-fund-reason','add-fund-note'].forEach(function(id) {
+        setVal(id, '');
+      });
+      var modal = document.getElementById('fin-add-modal');
+      if (modal) modal.classList.add('active');
+    };
+
+    window.closeAddFundModal = function() {
+      var modal = document.getElementById('fin-add-modal');
+      if (modal) modal.classList.remove('active');
+    };
+
+    window.saveCustomFund = function() {
+      var getVal = function(id) { var el = document.getElementById(id); return el ? el.value : ''; };
+      var funds = getFunds();
+      var id = getVal('add-fund-id');
+      if (!id) {
+        id = 'custom-' + Date.now();
+        funds.push({
+          id: id, name: getVal('add-fund-name') || '未命名基金', code: getVal('add-fund-code'),
+          company: getVal('add-fund-company'), type: getVal('add-fund-type'), market: getVal('add-fund-market'),
+          direction: getVal('add-fund-direction'), nav: parseFloat(getVal('add-fund-nav')) || 0,
+          navDate: getVal('add-fund-nav-date'), change: parseFloat(getVal('add-fund-change')) || 0,
+          perf1m: null, perf3m: null, perf1y: null, risk: getVal('add-fund-risk'), manager: '',
+          benchmark: '', fee: '', buyFee: '', redeemFee: '', scale: '', established: '', holdingDate: '',
+          holdings: [], url: getVal('add-fund-url'), status: 'watch', custom: true,
+          reason: getVal('add-fund-reason'), note: getVal('add-fund-note')
+        });
+      } else {
+        var f = funds.find(function(x) { return x.id === id; });
+        if (f) {
+          f.name = getVal('add-fund-name') || f.name; f.code = getVal('add-fund-code') || f.code;
+          f.company = getVal('add-fund-company') || f.company; f.type = getVal('add-fund-type') || f.type;
+          f.market = getVal('add-fund-market') || f.market; f.direction = getVal('add-fund-direction') || f.direction;
+          f.nav = parseFloat(getVal('add-fund-nav')) || f.nav; f.navDate = getVal('add-fund-nav-date') || f.navDate;
+          f.change = parseFloat(getVal('add-fund-change')) || f.change; f.risk = getVal('add-fund-risk') || f.risk;
+          f.url = getVal('add-fund-url') || f.url;
+        }
+      }
+      saveFunds(funds);
+      closeAddFundModal();
+      renderFinance();
+    };
+
+    window.editCustomFund = function(fundId) {
+      var funds = getFunds();
+      var f = funds.find(function(x) { return x.id === fundId; });
+      if (!f) return;
+      var setVal = function(id, val) { var el = document.getElementById(id); if (el) el.value = val || ''; };
+      setVal('add-fund-id', f.id);
+      var titleEl = document.getElementById('fin-add-title');
+      if (titleEl) titleEl.textContent = '编辑基金';
+      setVal('add-fund-name', f.name); setVal('add-fund-code', f.code);
+      setVal('add-fund-company', f.company); setVal('add-fund-type', f.type);
+      setVal('add-fund-market', f.market); setVal('add-fund-direction', f.direction);
+      setVal('add-fund-nav', f.nav); setVal('add-fund-nav-date', f.navDate);
+      setVal('add-fund-change', f.change); setVal('add-fund-risk', f.risk);
+      setVal('add-fund-url', f.url);
+      var modal = document.getElementById('fin-add-modal');
+      if (modal) modal.classList.add('active');
+    };
+
+    window.deleteFund = function(fundId) {
+      if (!confirm('确认删除这只基金？相关持仓记录也会一并删除。')) return;
+      var funds = getFunds().filter(function(f) { return f.id !== fundId; });
+      saveFunds(funds);
+      var positions = getPositions(); delete positions[fundId]; savePositions(positions);
+      var notes = getNotes(); delete notes[fundId]; saveNotes(notes);
+      renderFinance();
+    };
+
+    /* ---- Live Fund Data (eastmoney API, CORS enabled) ---- */
+    function refreshFundLive() {
+      var funds = getFunds();
+      if (!funds || funds.length === 0) return;
+      var codes = [];
+      for (var i = 0; i < funds.length; i++) {
+        if (funds[i].code) codes.push(funds[i].code);
+      }
+      if (codes.length === 0) return;
+      var srcEl = document.getElementById('fin-data-source');
+      if (srcEl) srcEl.textContent = '正在获取实时数据...';
+      var refreshBtn = document.querySelector('.fin-refresh-btn');
+      if (refreshBtn) { refreshBtn.textContent = '刷新中...'; refreshBtn.disabled = true; }
+      var apiUrl = 'https://fundmobapi.eastmoney.com/FundMNewApi/FundMNFInfo?pageIndex=1&pageSize=20&plat=Android&appType=ttjj&product=EFund&Version=1&deviceid=atlas&Ession=&Fcodes=' + codes.join(',');
+      fetch(apiUrl)
+        .then(function(res) { return res.json(); })
+        .then(function(json) {
+          if (json && json.Datas) {
+            var updated = 0;
+            for (var d = 0; d < json.Datas.length; d++) {
+              var item = json.Datas[d];
+              for (var f = 0; f < funds.length; f++) {
+                if (funds[f].code === item.FCODE) {
+                  if (item.NAV) funds[f].nav = parseFloat(item.NAV);
+                  if (item.NAVCHGRT !== null && item.NAVCHGRT !== undefined && item.NAVCHGRT !== '') funds[f].change = parseFloat(item.NAVCHGRT);
+                  if (item.PDATE) funds[f].navDate = item.PDATE;
+                  if (item.GSZ) funds[f].estimatedNav = parseFloat(item.GSZ);
+                  if (item.GSZZL) funds[f].estimatedChange = parseFloat(item.GSZZL);
+                  if (item.GZTIME) funds[f].estimatedTime = item.GZTIME;
+                  updated++;
+                  break;
+                }
+              }
+            }
+            saveFunds(funds);
+            var now = new Date();
+            var hh = String(now.getHours());
+            var mm = String(now.getMinutes());
+            if (hh.length < 2) hh = '0' + hh;
+            if (mm.length < 2) mm = '0' + mm;
+            if (updated > 0) {
+              liveDataInfo = '实时数据 | ' + updated + ' 只已更新 | ' + hh + ':' + mm;
+            } else {
+              liveDataInfo = '实时数据获取失败，显示缓存数据';
+            }
+          } else {
+            liveDataInfo = '实时数据获取失败，显示缓存数据';
+          }
+          renderFinance();
+          if (refreshBtn) { refreshBtn.textContent = '手动刷新'; refreshBtn.disabled = false; }
+        })
+        .catch(function(err) {
+          liveDataInfo = '实时数据获取失败：' + (err.message || '网络错误') + '，显示缓存数据';
+          renderFinance();
+          if (refreshBtn) { refreshBtn.textContent = '手动刷新'; refreshBtn.disabled = false; }
+        });
+    }
+    window.refreshFundLive = refreshFundLive;
+
+    /* ---- Init ---- */
+    renderFinance();
+    refreshFundLive();
+  } catch(e) { console.error('Finance module error:', e); }
+})();
+</script>
+
+<!-- ===== Nav Bar Module ===== -->
+<script>
+(function() {
+  'use strict';
+  try {
+    var navBar = document.querySelector('.nav-bar');
+    var navItems = document.querySelectorAll('.nav-item');
+    if (!navBar || navItems.length === 0) return;
+
+    navBar.addEventListener('click', function(e) {
+      var item = e.target.closest('.nav-item');
+      if (!item) return;
+      e.preventDefault();
+      var targetId = item.getAttribute('data-target');
+      if (!targetId) return;
+      var target = document.getElementById(targetId);
+      if (!target) return;
+
+      for (var i = 0; i < navItems.length; i++) navItems[i].classList.remove('active');
+      item.classList.add('active');
+
+      var navHeight = navBar.offsetHeight;
+      var rect = target.getBoundingClientRect();
+      var scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+      var offset = rect.top + scrollPos - navHeight - 8;
+      window.scrollTo({ top: offset, behavior: 'smooth' });
+    });
+
+    var sections = [];
+    for (var i = 0; i < navItems.length; i++) {
+      var targetId = navItems[i].getAttribute('data-target');
+      var section = targetId ? document.getElementById(targetId) : null;
+      if (section) sections.push({ id: targetId, el: section, item: navItems[i] });
+    }
+
+    var ticking = false;
+    function updateActive() {
+      var navHeight = navBar.offsetHeight;
+      var scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+      var current = null;
+      for (var i = 0; i < sections.length; i++) {
+        var rect = sections[i].el.getBoundingClientRect();
+        var top = rect.top + scrollPos;
+        if (top - navHeight - 20 <= scrollPos) {
+          current = sections[i];
+        } else {
+          break;
+        }
+      }
+      if (!current && sections.length > 0) current = sections[0];
+      if (current) {
+        for (var j = 0; j < navItems.length; j++) {
+          if (navItems[j] === current.item) {
+            navItems[j].classList.add('active');
+          } else {
+            navItems[j].classList.remove('active');
+          }
+        }
+        if (window.innerWidth <= 768) {
+          var navList = navBar.querySelector('.nav-list');
+          if (navList && current.item) {
+            var itemRect = current.item.getBoundingClientRect();
+            var listRect = navList.getBoundingClientRect();
+            if (itemRect.left < listRect.left || itemRect.right > listRect.right) {
+              current.item.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+          }
+        }
+      }
+      ticking = false;
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        window.requestAnimationFrame(updateActive);
+        ticking = true;
+      }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    updateActive();
+  } catch(e) { console.error('Nav bar module error:', e); }
+})();
+</script>
+
+<!-- Font Size Control -->
+<div class="font-control">
+  <div class="fc-panel" id="fcPanel">
+    <div class="fc-label">
+      <span class="fc-label-text">字体大小</span>
+      <span class="fc-value" id="fcValue">100%</span>
+    </div>
+    <input type="range" class="fc-slider" id="fcSlider" min="70" max="150" value="100" step="5">
+    <button class="fc-reset" id="fcReset">重置</button>
+  </div>
+  <button class="fc-toggle" id="fcToggle">Aa</button>
+</div>
+
+<script>
+(function() {
+  try {
+    var STORAGE_KEY = 'atlas-font-scale';
+    var defaultScale = 100;
+
+    function getStoredScale() {
+      try {
+        var v = localStorage.getItem(STORAGE_KEY);
+        if (!v) return defaultScale;
+        var n = parseInt(v, 10);
+        if (isNaN(n)) return defaultScale;
+        if (n < 70) return 70;
+        if (n > 150) return 150;
+        return n;
+      } catch(e) { return defaultScale; }
+    }
+
+    function applyScale(val) {
+      document.body.style.zoom = val / 100;
+    }
+
+    var slider = document.getElementById('fcSlider');
+    var valueEl = document.getElementById('fcValue');
+    var panel = document.getElementById('fcPanel');
+    var toggle = document.getElementById('fcToggle');
+    var reset = document.getElementById('fcReset');
+
+    if (!slider || !toggle || !valueEl || !panel) return;
+
+    var currentScale = getStoredScale();
+    slider.value = currentScale;
+    valueEl.textContent = currentScale + '%';
+    applyScale(currentScale);
+
+    slider.addEventListener('input', function() {
+      var val = parseInt(slider.value, 10);
+      valueEl.textContent = val + '%';
+      applyScale(val);
+      try { localStorage.setItem(STORAGE_KEY, String(val)); } catch(e) {}
+    });
+
+    toggle.addEventListener('click', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      panel.classList.toggle('open');
+    });
+
+    document.addEventListener('click', function(e) {
+      var target = e.target;
+      var inside = false;
+      var el = target;
+      while (el) {
+        if (el.classList && el.classList.contains('font-control')) { inside = true; break; }
+        el = el.parentElement;
+      }
+      if (!inside) panel.classList.remove('open');
+    });
+
+    panel.addEventListener('click', function(e) { e.stopPropagation(); });
+
+    if (reset) {
+      reset.addEventListener('click', function() {
+        slider.value = defaultScale;
+        valueEl.textContent = defaultScale + '%';
+        applyScale(defaultScale);
+        try { localStorage.setItem(STORAGE_KEY, String(defaultScale)); } catch(e) {}
+      });
+    }
+  } catch(e) { console.error('Font control error:', e); }
+})();
+</script>
+
+</body>
+</html>
