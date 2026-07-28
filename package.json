@@ -1,0 +1,10 @@
+{
+  "name": "atlas-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "morning": "node scripts/update-morning.mjs",
+    "finance": "node scripts/update-finance.mjs"
+  }
+}
