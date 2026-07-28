@@ -1899,6 +1899,15 @@ window.addEventListener('error', function(e) {
       return div.innerHTML;
     };
 
+    window.normalizeUrl = function(url) {
+      if (!url) return '';
+      var u = String(url).trim();
+      if (u.indexOf('http://') !== 0 && u.indexOf('https://') !== 0) {
+        u = 'https://' + u;
+      }
+      return u;
+    };
+
     window.getTodayKey = function() {
       var d = new Date();
       var m = String(d.getMonth() + 1);
@@ -2123,7 +2132,7 @@ window.addEventListener('error', function(e) {
         var t = lib.find(function(x) { return x.id === tid; });
         if (!t) return '';
         var done = comp[dateStr] && comp[dateStr][tid];
-        var videoBtn = t.videoUrl ? '<a class="tc-btn" href="' + escapeHtml(t.videoUrl) + '" target="_blank" rel="noopener">开始训练</a>' : '';
+        var videoBtn = t.videoUrl ? '<a class="tc-btn" href="' + escapeHtml(normalizeUrl(t.videoUrl)) + '" target="_blank" rel="noopener">开始训练</a>' : '';
         return '<div class="today-training">' +
           '<div class="tt-header"><span class="tt-name">' + escapeHtml(t.name) + '</span>' +
           '<span class="tt-status ' + (done ? 'done' : 'pending') + '">' + (done ? '已完成' : '待完成') + '</span></div>' +
@@ -2147,7 +2156,7 @@ window.addEventListener('error', function(e) {
         return;
       }
       container.innerHTML = lib.map(function(t) {
-        var videoBtn = t.videoUrl ? '<a class="tc-btn" href="' + escapeHtml(t.videoUrl) + '" target="_blank" rel="noopener">打开视频</a>' : '';
+        var videoBtn = t.videoUrl ? '<a class="tc-btn" href="' + escapeHtml(normalizeUrl(t.videoUrl)) + '" target="_blank" rel="noopener">打开视频</a>' : '';
         return '<div class="training-card">' +
           '<div class="tc-name">' + escapeHtml(t.name) + '</div>' +
           '<span class="tc-platform">' + escapeHtml(t.platform || '未设置') + '</span>' +
@@ -2274,6 +2283,9 @@ window.addEventListener('error', function(e) {
       var name = getId('modal-name').trim();
       if (!name) { alert('请输入训练名称'); return; }
       var videoUrl = getId('modal-url').trim();
+      if (videoUrl && videoUrl.indexOf('http://') !== 0 && videoUrl.indexOf('https://') !== 0) {
+        videoUrl = 'https://' + videoUrl;
+      }
       var platform = getId('modal-platform') || detectPlatform(videoUrl);
       var type = getId('modal-type') || '全身有氧';
       var duration = parseInt(getId('modal-duration')) || 0;
@@ -2839,7 +2851,7 @@ window.addEventListener('error', function(e) {
         html += '<button class="btn-outline" onclick="event.stopPropagation();deleteFund(\'' + f.id + '\')">删除</button>';
       }
       if (f.url) {
-        html += '<a class="fund-link" href="' + escapeHtml(f.url) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">官方页面</a>';
+        html += '<a class="fund-link" href="' + escapeHtml(normalizeUrl(f.url)) + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">官方页面</a>';
       }
       html += '</div>';
       return html;
