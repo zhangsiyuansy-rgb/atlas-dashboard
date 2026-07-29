@@ -184,7 +184,7 @@ async function main() {
   const catLabels = { china: 'China', international: 'International', finance: 'Finance', ai: 'AI' };
   const catHtml = Object.keys(catLabels).map(k => renderCategory(catLabels[k], cats[k] || [])).join('\n\n');
   html = replaceSection(html, '<div class="brief-categories">', '<!-- Summary -->',
-    `    <div class="brief-categories">\n${catHtml}\n    </div>\n\n    `);
+    `\n${catHtml}\n    </div>\n\n    `);
 
   // Morning Brief summary
   const sumHtml = `      <div class="summary-item">
@@ -196,22 +196,21 @@ async function main() {
         <div class="summary-text">${esc(cats.risk)}</div>
       </div>`;
   html = replaceSection(html, '<div class="brief-summary">', '</section>',
-    `    <div class="brief-summary">\n${sumHtml}\n    </div>\n  `);
+    `\n${sumHtml}\n    </div>\n  `);
 
   // Trend XHS
   const xhsHtml = (content.trends.xiaohongshu || []).map(renderTrendCard).join('\n\n');
   html = replaceSection(html, '<div class="tab-panel active" data-panel="xhs">', '<!-- 抖音热点 -->',
-    `    <div class="tab-panel active" data-panel="xhs">\n${xhsHtml}\n    </div>\n\n    `);
+    `\n${xhsHtml}\n    </div>\n\n    `);
 
   // Trend DY
   const dyHtml = (content.trends.douyin || []).map(renderTrendCard).join('\n\n');
   html = replaceSection(html, '<div class="tab-panel" data-panel="dy">', '<!-- 平台观察 -->',
-    `    <div class="tab-panel" data-panel="dy">\n${dyHtml}\n    </div>\n\n    `);
+    `\n${dyHtml}\n    </div>\n\n    `);
 
   // Platform observation
   const obs = content.trends.observation || {};
-  const obsHtml = `    <!-- 平台观察 -->
-    <div class="platform-observation">
+  const obsHtml = `    <div class="platform-observation">
       <div class="po-title">今日平台观察</div>
       <div class="po-item"><span class="po-key">小红书</span>${esc(obs.xhs)}</div>
       <div class="po-item"><span class="po-key">抖音</span>${esc(obs.dy)}</div>
@@ -219,12 +218,11 @@ async function main() {
       <div class="po-item"><span class="po-key">营销学习</span>${esc(obs.marketing)}</div>
       <div class="po-item"><span class="po-key">创作者跟进</span>${esc(obs.creator)}</div>
     </div>`;
-  html = replaceSection(html, '<!-- 平台观察 -->', '</section>', obsHtml + '\n  ');
+  html = replaceSection(html, '<!-- 平台观察 -->', '</section>', '\n' + obsHtml + '\n  ');
 
   // English Coach
   const eng = content.english;
-  const engHtml = `    <!-- 今日商务表达 -->
-    <div class="eng-section">
+  const engHtml = `    <div class="eng-section">
       <div class="eng-section-title">今日商务表达</div>
 ${(eng.expressions || []).map(renderVocabRow).join('\n')}
     </div>
@@ -279,7 +277,7 @@ ${(eng.evaluation || []).map(renderEvalItem).join('\n')}
     `;
 
   // Replace English Coach content (from 今日商务表达 to 我的回答)
-  html = replaceSection(html, '<!-- 今日商务表达 -->', '<!-- 我的回答 -->', engHtml);
+  html = replaceSection(html, '<!-- 今日商务表达 -->', '<!-- 我的回答 -->', '\n' + engHtml);
 
   writeFileSync('index.html', html);
   console.log('index.html updated successfully');
