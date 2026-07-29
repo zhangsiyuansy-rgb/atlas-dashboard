@@ -2964,7 +2964,9 @@ window.addEventListener('error', function(e) {
             var r = f.recommendation;
             recHtml += '<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-light);">';
             recHtml += '<span class="fund-rec-badge ' + r.action + '" style="flex-shrink:0;">' + escapeHtml(r.title) + '</span>';
-            recHtml += '<span style="font-size:12px;color:var(--text-2);flex:1;">' + escapeHtml(f.name.substring(0, 16)) + '... — ' + escapeHtml(r.reason.substring(0, 80)) + '...</span>';
+            recHtml += '<div style="font-size:12px;color:var(--text-2);flex:1;line-height:1.5;">' +
+              '<strong>' + escapeHtml(f.name) + '</strong><br>' +
+              escapeHtml(r.reason) + '</div>';
             recHtml += '</div>';
           }
         });
