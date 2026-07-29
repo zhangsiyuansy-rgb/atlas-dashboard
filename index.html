@@ -855,6 +855,27 @@ body {
 .fa-text { font-size: 12px; color: var(--text-2); line-height: 1.6; margin-bottom: 8px; }
 .fa-source { font-size: 10px; color: var(--text-3); }
 
+/* ===== Fund Recommendation ===== */
+.fund-recommend { margin-top: 10px; padding: 12px 14px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg); }
+.fund-rec-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.fund-rec-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 4px; letter-spacing: 0.03em; }
+.fund-rec-badge.hold { color: #6b6b6b; background: #f0f0f0; }
+.fund-rec-badge.buy { color: #c0392b; background: #fde8e8; }
+.fund-rec-badge.sell { color: #27ae60; background: #e8f8e8; }
+.fund-rec-badge.watch { color: #e67e22; background: #fef3e8; }
+.fund-rec-title { font-size: 12px; font-weight: 600; color: var(--text-2); }
+.fund-rec-reason { font-size: 12px; color: var(--text-2); line-height: 1.65; margin-bottom: 6px; }
+.fund-rec-framework { font-size: 11px; color: var(--text-3); border-top: 1px solid var(--border-light); padding-top: 6px; margin-top: 6px; }
+.fund-rec-framework strong { color: var(--text-2); }
+
+/* ===== Buffett Framework Summary ===== */
+.buffett-summary { margin-top: 12px; padding: 14px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg); }
+.buffett-title { font-size: 11px; font-weight: 700; color: var(--text-3); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }
+.buffett-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.buffett-item { font-size: 11px; color: var(--text-2); padding: 6px 8px; background: var(--highlight); border-radius: 4px; }
+.buffett-item strong { color: var(--text-1); display: block; margin-bottom: 2px; }
+@media (max-width: 600px) { .buffett-grid { grid-template-columns: 1fr; } }
+
 .fund-holdings { margin-top: 8px; }
 .holding-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 12px; border-bottom: 1px solid var(--border-light); }
 .holding-row:last-child { border-bottom: none; }
@@ -1727,6 +1748,8 @@ body {
       <div class="fin-overview" id="fin-overview-stats"></div>
       <div class="fin-alert" id="fin-alert-risk"></div>
       <div class="fin-alert" id="fin-alert-event"></div>
+      <div id="fin-rec-summary"></div>
+      <div class="buffett-summary" id="fin-buffett-framework"></div>
       <div class="fund-list" id="fin-overview-list"></div>
       <div class="fin-updated">
         <span id="fin-data-source"></span>
@@ -2656,7 +2679,12 @@ window.addEventListener('error', function(e) {
           { name: '谷歌A GOOGL', pct: '约3%' }, { name: '谷歌C GOOG', pct: '约3%' },
           { name: '博通 AVGO', pct: '约3%' }, { name: '沃尔玛 WMT', pct: '约3%' }
         ],
-        url: 'https://www.nffund.com/main/jjcp/fundproduct/016453.shtml', status: 'hold', custom: false
+        url: 'https://www.nffund.com/main/jjcp/fundproduct/016453.shtml', status: 'hold', custom: false,
+        recommendation: {
+          action: 'hold', title: '持有 / 不动',
+          reason: '纳斯达克100近三月涨18.6%（2023年底以来最强），VIX恐慌指数17-20处于低位，散户连续14日净买入——市场情绪偏贪婪。美联储7月维持利率不变，9月降息概率从65%降至约50%，估值前瞻P/E约28-30倍，安全边际有限。但底层公司（英伟达、苹果、微软等）是真正优秀的企业，AI资本开支加速（四大巨头2025年约3500亿美元），复利引擎完好。结论：不卖（优秀企业不应因短期估值偏高而卖出），不加（当前价位贪婪情绪明显，等待10-15%回调再加仓更稳妥）。',
+          framework: '市场先生：市场情绪偏乐观，报价不便宜 | 恐惧贪婪：别人贪婪时恐惧，不追高 | 永久持有：底层企业优秀，不因涨幅大而卖出 | 安全边际：当前估值偏高，安全边际<25%'
+        }
       },
       {
         id: 'f2', name: '万家纳斯达克100指数发起式(QDII)A', code: '019441',
@@ -2678,7 +2706,12 @@ window.addEventListener('error', function(e) {
           { name: '谷歌A GOOGL', pct: '3.24%' }, { name: '沃尔玛 WMT', pct: '3.24%' },
           { name: '谷歌C GOOG', pct: '3.02%' }, { name: '博通 AVGO', pct: '2.84%' }
         ],
-        url: 'https://www.wjasset.com/products/qdii/019441/', status: 'hold', custom: false
+        url: 'https://www.wjasset.com/products/qdii/019441/', status: 'hold', custom: false,
+        recommendation: {
+          action: 'hold', title: '持有 / 不动（与f1重复，不建议追加）',
+          reason: '与南方纳指100C跟踪同一指数，前十大持仓高度重合，同时持有并未增加分散度。万家已于7月14日取消总规模上限并恢复大额申购，流动性改善。但当前纳斯达克100估值偏高、市场情绪偏贪婪，不建议在此价位追加。如需新增资金，应考虑分散到非美股科技方向（如新兴市场或A股TMT）。结论：持有现有仓位，不追加。未来如要减仓，优先减这只（A类有申购费，C类更适合短持）。',
+          framework: '市场先生：同f1，市场偏乐观 | 能力圈：两只纳指100基金高度重复，无信息优势 | 安全边际：估值偏高，不加仓 | 分散原则：集中度过高，新资金应分散'
+        }
       },
       {
         id: 'f3', name: '建信新兴市场混合(QDII)C', code: '018147',
@@ -2696,7 +2729,12 @@ window.addEventListener('error', function(e) {
           { name: '注：偏股混合型，持仓以新兴市场股票为主', pct: '' },
           { name: '具体持仓请见基金季报', pct: '' }
         ],
-        url: 'https://www.ccbfund.cn/', status: 'hold', custom: false
+        url: 'https://www.ccbfund.cn/', status: 'hold', custom: false,
+        recommendation: {
+          action: 'buy', title: '持有 / 可小幅加仓',
+          reason: '近一月回调约9%，市场对新兴市场出现一定恐惧。但印度等核心市场基本面强劲，MSCI新兴市场前瞻P/E约12-15倍，远低于美股科技的28-30倍，安全边际更充足。美联储暂不降息令美元走强，短期对新兴市场有汇率压力，但Q2美国GDP增长3%显示全球经济仍有韧性。结论：持有现有仓位，可利用回调分批小幅加仓。这是巴菲特"别人恐惧时贪婪"的典型场景——但注意控制仓位，新兴市场波动大于成熟市场。',
+          framework: '恐惧贪婪：近一月跌9%，市场恐惧 → 逆向买入机会 | 安全边际：EM估值12-15x vs 美股28-30x，安全边际更大 | 市场先生：悲观报价提供更好入场点'
+        }
       },
       {
         id: 'f4', name: '易方达信息产业混合A', code: '001513',
@@ -2718,8 +2756,13 @@ window.addEventListener('error', function(e) {
           { name: '亨通光电 600487', pct: '3.10%' }, { name: '长飞光纤 601869', pct: '2.93%' },
           { name: '光库科技 300620', pct: '2.82%' }, { name: '中天科技 600522', pct: '2.70%' }
         ],
-        url: 'https://www.efunds.com.cn/fund/001513.shtml', status: 'hold', custom: false
-      }
+        url: 'https://www.efunds.com.cn/fund/001513.shtml', status: 'hold', custom: false,
+        recommendation: {
+          action: 'buy', title: '分批买入 / 逢跌加仓',
+          reason: '中证TMT指数近一月下跌超10%，重仓股新易盛、中际旭创回调明显。但AI算力长期需求逻辑未变——美国四大科技巨头2025年AI资本开支约3500亿美元、2026年约4000亿美元，中国光模块企业是全球AI算力链核心供应商。7月3日美国取消三大芯片设计软件对华出口限制，利好国内半导体设计。基金已限制大额申购（单日上限1万元），天然适合分批建仓。结论：当前回调是AI长线逻辑下的买入机会，建议利用每日1万元额度持续定投。这是"别人恐惧时贪婪"的教科书案例。',
+          framework: '恐惧贪婪：TMT跌10%+，市场恐惧 → 贪婪买入 | 安全边际：回调后估值更合理 | 市场先生：悲观报价 ≠ 价值下降，AI需求在加速 | 永久持有：AI算力是长期复利赛道'
+        }
+      },
     ];
 
     function getFunds() {
@@ -2861,6 +2904,16 @@ window.addEventListener('error', function(e) {
       }
       html += renderFundAnalysis(f);
       html += renderFundHoldings(f);
+      if (f.recommendation) {
+        var rec = f.recommendation;
+        html += '<div class="fund-recommend">';
+        html += '<div class="fund-rec-header">';
+        html += '<span class="fund-rec-badge ' + rec.action + '">' + escapeHtml(rec.title) + '</span>';
+        html += '</div>';
+        html += '<div class="fund-rec-reason">' + escapeHtml(rec.reason) + '</div>';
+        html += '<div class="fund-rec-framework"><strong>巴菲特框架分析：</strong>' + escapeHtml(rec.framework) + '</div>';
+        html += '</div>';
+      }
       html += renderFundCustomNote(f, note);
       html += '<div class="fund-actions">';
       html += '<button class="btn-outline" onclick="event.stopPropagation();openPositionModal(\'' + f.id + '\')">' + (pos ? '修改持仓' : '录入持仓') + '</button>';
@@ -2901,7 +2954,33 @@ window.addEventListener('error', function(e) {
       var riskEl = document.getElementById('fin-alert-risk');
       if (riskEl) riskEl.innerHTML = '<span class="fin-alert-label">持仓提醒</span>南方纳指100C与万家纳指100A同时跟踪纳斯达克100指数，前十大持仓高度重合（重合度高），同时持有并未显著增加分散度。';
       var eventEl = document.getElementById('fin-alert-event');
-      if (eventEl) eventEl.innerHTML = '<span class="fin-alert-label">今日关注</span>美联储7月议息会议临近，美股科技股波动加大；人民币汇率走势影响QDII基金实际收益。';
+      if (eventEl) eventEl.innerHTML = '<span class="fin-alert-label">今日关注</span>美联储7月维持利率4.25-4.50%不变（9:2投票，2人支持降息），鲍威尔未承诺9月降息，概率从65%降至约50%。美国Q2 GDP增长3%超预期，纳斯达克100七月涨2.4%、三月涨18.6%。AI四大巨头资本开支2025年约3500亿美元、2026年约4000亿美元。美元走强对QDII有汇率收益但压制新兴市场。';
+      var recEl = document.getElementById('fin-rec-summary');
+      if (recEl) {
+        var recHtml = '<div class="fund-recommend" style="margin-bottom:12px;">';
+        recHtml += '<div class="fund-rec-header"><span class="fund-rec-badge hold" style="background:#1a1a1a;color:#fff;font-size:10px;">操作建议汇总</span></div>';
+        funds.forEach(function(f) {
+          if (f.recommendation) {
+            var r = f.recommendation;
+            recHtml += '<div style="display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-light);">';
+            recHtml += '<span class="fund-rec-badge ' + r.action + '" style="flex-shrink:0;">' + escapeHtml(r.title) + '</span>';
+            recHtml += '<span style="font-size:12px;color:var(--text-2);flex:1;">' + escapeHtml(f.name.substring(0, 16)) + '... — ' + escapeHtml(r.reason.substring(0, 80)) + '...</span>';
+            recHtml += '</div>';
+          }
+        });
+        recHtml += '</div>';
+        recEl.innerHTML = recHtml;
+      }
+      var bfEl = document.getElementById('fin-buffett-framework');
+      if (bfEl) {
+        bfEl.innerHTML = '<div class="buffett-title">巴菲特投资框架分析（基于 buffett-letters-skill）</div>' +
+          '<div class="buffett-grid">' +
+          '<div class="buffett-item"><strong>市场先生 Mr. Market</strong>纳斯达克情绪偏乐观（VIX 17-20低位），新兴市场和A股TMT偏悲观。市场先生的报价是工具而非指导——美股不追高，EM和TMT可利用悲观报价。</div>' +
+          '<div class="buffett-item"><strong>恐惧与贪婪</strong>美股散户连续14日净买入（贪婪）→ 不追高。A股TMT跌10%+、新兴市场跌9%（恐惧）→ 逆向买入机会。</div>' +
+          '<div class="buffett-item"><strong>安全边际</strong>美股科技前瞻P/E 28-30x，安全边际<25% → 不加仓。新兴市场P/E 12-15x，安全边际充足 → 可加仓。A股TMT回调后估值更合理 → 分批买入。</div>' +
+          '<div class="buffett-item"><strong>永久持有</strong>英伟达、微软、苹果等是真正优秀的企业，AI是真实复利赛道。不因短期涨幅大而卖出优秀企业——"我们的理想持有期是永远"。</div>' +
+          '</div>';
+      }
       var listEl = document.getElementById('fin-overview-list');
       if (listEl) {
         listEl.innerHTML = funds.map(function(f) {
