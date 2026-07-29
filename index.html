@@ -2747,7 +2747,7 @@ window.addEventListener('error', function(e) {
     ];
 
     function getFunds() {
-      try { var s = localStorage.getItem(FIN_FUND_KEY); return s ? JSON.parse(s) : defaultFunds; }
+      try { var s = localStorage.getItem(FIN_FUND_KEY); var stored = s ? JSON.parse(s) : null; if (stored) { return stored.map(function(f) { var df = defaultFunds.find(function(d) { return d.id === f.id; }); if (df && df.recommendation) f.recommendation = df.recommendation; return f; }); } return defaultFunds; }
       catch(e) { return defaultFunds; }
     }
     function saveFunds(funds) { try { localStorage.setItem(FIN_FUND_KEY, JSON.stringify(funds)); } catch(e) {} }
