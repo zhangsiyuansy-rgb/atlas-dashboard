@@ -2736,8 +2736,8 @@ window.addEventListener('error', function(e) {
         url: 'https://www.nffund.com/main/jjcp/fundproduct/016453.shtml', status: 'hold', custom: false,
         recommendation: {
           action: 'hold', title: '持有/不动',
-          reason: '纳斯达克100指数长期受益于AI和科技创新，但当前估值处于历史高位，安全边际不足。市场先生短期情绪波动，但长期趋势向上。建议继续持有，不追加，等待回调机会。',
-          framework: '市场先生：短期波动正常，长期看好 | 恐惧贪婪：市场情绪乐观，需谨慎 | 安全边际：估值偏高，缺乏安全边际 | 永久持有：优质资产可长期持有'
+          reason: '纳斯达克100指数在AI浪潮和降息预期下表现强劲，但估值已高，安全边际不足。市场先生情绪亢奋，短期追高风险大。基于能力圈，长期看好科技龙头，但当前不宜加仓，建议持有不动，等待回调机会。',
+          framework: '市场先生：市场情绪乐观，报价偏高 | 恐惧贪婪：贪婪情绪主导，需谨慎 | 安全边际：估值缺乏安全边际 | 永久持有：长期持有优质公司，但需合理价格'
         }
       },
       {
@@ -2763,8 +2763,8 @@ window.addEventListener('error', function(e) {
         url: 'https://www.wjasset.com/products/qdii/019441/', status: 'hold', custom: false,
         recommendation: {
           action: 'hold', title: '持有/不追加',
-          reason: '与f1跟踪同一指数，但费率较高。在能力圈内，但重复配置增加集中风险。建议持有，不追加，优先考虑f1。',
-          framework: '市场先生：同f1 | 恐惧贪婪：同f1 | 安全边际：估值偏高 | 永久持有：长期持有但可优化'
+          reason: '与f1跟踪同一指数，重复配置。虽然基本面强劲，但估值过高，且组合中该基金占比已大，再追加会加剧集中风险。建议保持现有仓位，不再追加，以控制风险。',
+          framework: '市场先生：市场先生报价高企 | 恐惧贪婪：贪婪情绪明显 | 安全边际：安全边际不足 | 永久持有：长期持有，但避免过度集中'
         }
       },
       {
@@ -2786,8 +2786,8 @@ window.addEventListener('error', function(e) {
         url: 'https://www.ccbfund.cn/', status: 'hold', custom: false,
         recommendation: {
           action: 'buy', title: '可小幅加仓',
-          reason: '新兴市场估值处于低位，经济基本面改善，资金流入增加。安全边际较高，符合逆向投资原则。建议分批小幅加仓，利用市场恐慌时买入。',
-          framework: '市场先生：情绪低迷，提供机会 | 恐惧贪婪：市场恐惧，应贪婪 | 安全边际：估值低，安全边际高 | 永久持有：长期增长潜力大'
+          reason: '新兴市场估值相对合理，资金流入改善，且与发达市场相关性低，可分散组合风险。美联储降息预期利好新兴市场，当前具备一定安全边际。建议小幅加仓，但需注意地缘政治风险。',
+          framework: '市场先生：市场先生报价合理 | 恐惧贪婪：恐惧情绪减退，机会显现 | 安全边际：估值有吸引力 | 永久持有：长期配置新兴市场增长'
         }
       },
       {
@@ -2813,8 +2813,8 @@ window.addEventListener('error', function(e) {
         url: 'https://www.efunds.com.cn/fund/001513.shtml', status: 'hold', custom: false,
         recommendation: {
           action: 'buy', title: '分批买入',
-          reason: '中国信创政策利好，估值处于历史低位，回购潮显示产业资本认可。在能力圈内，安全边际充足。建议分批买入，长期持有。',
-          framework: '市场先生：悲观情绪，错杀优质股 | 恐惧贪婪：他人恐惧时贪婪 | 安全边际：低估值提供保护 | 永久持有：政策支持，长期成长'
+          reason: '中国信创政策加码，行业景气度提升，且估值处于历史低位，安全边际较高。市场先生对国内TMT板块情绪悲观，但基本面改善。建议分批买入，长期持有，分享国产替代红利。',
+          framework: '市场先生：市场先生过度悲观 | 恐惧贪婪：恐惧情绪带来机会 | 安全边际：估值低估 | 永久持有：长期持有优质企业'
         }
       },
     ];
@@ -3006,9 +3006,9 @@ window.addEventListener('error', function(e) {
         statsEl.innerHTML = statsHtml;
       }
       var riskEl = document.getElementById('fin-alert-risk');
-      if (riskEl) riskEl.innerHTML = '<span class="fin-alert-label">持仓提醒</span>组合中纳斯达克指数基金占比过高，且均为QDII，需关注人民币升值对净值的负面影响。';
+      if (riskEl) riskEl.innerHTML = '<span class="fin-alert-label">持仓提醒</span>组合中纳斯达克100指数权重过高（两只基金跟踪同一指数），且全球科技股估值处于高位，短期回调风险较大。';
       var eventEl = document.getElementById('fin-alert-event');
-      if (eventEl) eventEl.innerHTML = '<span class="fin-alert-label">今日关注</span>今日关注美联储官员讲话及美国初请失业金数据，可能影响降息预期；同时关注中国信创板块动态。';
+      if (eventEl) eventEl.innerHTML = '<span class="fin-alert-label">今日关注</span>关注今日美联储官员讲话和AI巨头财报后续影响，以及人民币汇率波动对QDII基金的影响。';
       var recEl = document.getElementById('fin-rec-summary');
       if (recEl) {
         var recHtml = '<div class="fund-recommend" style="margin-bottom:12px;">';
@@ -3031,10 +3031,10 @@ window.addEventListener('error', function(e) {
       if (bfEl) {
         bfEl.innerHTML = '<div class="buffett-title">巴菲特投资框架分析（基于 buffett-letters-skill）</div>' +
           '<div class="buffett-grid">' +
-          '<div class="buffett-item"><strong>市场先生 Mr. Market</strong>市场先生情绪波动大，近期科技股回调但长期趋势向好。投资者应利用市场先生的报价，而非被其左右。</div>' +
-          '<div class="buffett-item"><strong>恐惧与贪婪</strong>当前纳斯达克指数估值偏高，市场贪婪；而新兴市场和中国TMT估值低，市场恐惧。应逆向操作，在恐惧时买入。</div>' +
-          '<div class="buffett-item"><strong>安全边际</strong>纳斯达克指数安全边际不足，而新兴市场和中国TMT安全边际充足。买入时注重安全边际，避免追高。</div>' +
-          '<div class="buffett-item"><strong>永久持有</strong>优质资产可长期持有，但需定期审视。纳斯达克和新兴市场长期增长逻辑未变，中国TMT政策支持，均可长期配置。</div>' +
+          '<div class="buffett-item"><strong>市场先生 Mr. Market</strong>当前市场先生对科技股（f1/f2）报价亢奋，对新兴市场（f3）和国内TMT（f4）报价相对低迷，投资者应利用市场先生的情绪，而非被其左右。</div>' +
+          '<div class="buffett-item"><strong>恐惧与贪婪</strong>全球科技股贪婪情绪高涨，而国内TMT和新兴市场仍存恐惧，逆向投资机会显现，但需警惕科技股回调风险。</div>' +
+          '<div class="buffett-item"><strong>安全边际</strong>f1/f2安全边际不足，f3/f4相对充足，组合整体需控制科技股仓位，增加低估值资产配置。</div>' +
+          '<div class="buffett-item"><strong>永久持有</strong>长期看，科技和创新仍是增长引擎，但需以合理价格买入并长期持有，避免因短期波动而频繁交易。</div>' +
           '</div>';
       }
       var listEl = document.getElementById('fin-overview-list');
@@ -3119,15 +3119,15 @@ window.addEventListener('error', function(e) {
     }
 
     var finNewsFilter = 'all';
-                                                            var finNewsData = [
-      { id: 'n1', fund: 'f1,f2', title: '美联储维持利率不变，但暗示年内或降息一次', date: '2026-08-17', impact: 'pos', duration: 'short', detail: '美联储在8月会议上维持利率不变，但点阵图显示年内可能还有一次降息。市场预期宽松环境利好科技股，纳斯达克100指数期货小幅上涨。', related: '利率、科技股', source: '美联储声明' },
-      { id: 'n2', fund: 'f1,f2', title: 'AI芯片需求强劲，英伟达财报超预期', date: '2026-08-15', impact: 'pos', duration: 'mid', detail: '英伟达公布二季度财报，营收同比增长65%，数据中心业务创纪录。AI投资热潮持续，带动纳斯达克100指数成分股整体走强。', related: 'AI、半导体', source: '公司财报' },
-      { id: 'n3', fund: 'f1,f2', title: '人民币兑美元汇率小幅升值至6.85', date: '2026-08-16', impact: 'neg', duration: 'short', detail: '人民币升值对QDII基金净值产生负面影响，因为以人民币计价的资产换算成美元时价值减少。但长期看，汇率波动对指数投资影响有限。', related: '汇率、QDII', source: '外汇市场' },
-      { id: 'n4', fund: 'f3', title: '新兴市场资金流入创三个月新高', date: '2026-08-14', impact: 'pos', duration: 'mid', detail: '国际金融协会数据显示，8月前两周新兴市场股票基金净流入120亿美元，主要受美元走弱和估值吸引。MSCI新兴市场指数近期反弹。', related: '资金流、新兴市场', source: 'IIF' },
-      { id: 'n5', fund: 'f3', title: '印度和巴西经济数据超预期，提振新兴市场', date: '2026-08-12', impact: 'pos', duration: 'mid', detail: '印度二季度GDP增长7.8%，巴西失业率降至历史低位。新兴市场经济基本面改善，企业盈利预期上调。', related: '宏观经济', source: '各国统计局' },
-      { id: 'n6', fund: 'f4', title: '中国信创产业政策加码，国产替代加速', date: '2026-08-13', impact: 'pos', duration: 'mid', detail: '国务院发布新一轮信创产业支持政策，要求2027年前党政及重点行业国产化率提升至80%。相关TMT公司订单有望大增。', related: '政策、信创', source: '国务院文件' },
-      { id: 'n7', fund: 'f4', title: '中国科技股估值处于历史低位，回购潮涌现', date: '2026-08-10', impact: 'pos', duration: 'mid', detail: '中证TMT指数市盈率处于近五年10%分位，多家互联网龙头宣布大额回购。市场情绪谨慎，但价值显现。', related: '估值、回购', source: 'Wind数据' },
-      { id: 'n8', fund: 'f1,f2,f3,f4', title: '全球科技股波动加大，但长期趋势向好', date: '2026-08-17', impact: 'neu', duration: 'short', detail: '近期科技股因获利回吐出现回调，但AI和数字化转型的长期逻辑未变。建议投资者保持定投，避免追涨杀跌。', related: '市场情绪', source: '市场分析' }
+                                                                var finNewsData = [
+      { id: 'n1', fund: 'f1,f2', title: '美联储维持利率不变，降息预期升温', date: '2026-08-18', impact: 'pos', duration: 'mid', detail: '美联储在8月会议上维持基准利率不变，但暗示若通胀继续回落，可能在年内降息。市场预期9月降息概率升至70%，利好成长股和科技板块。', related: '纳斯达克100指数，科技股估值', source: '美联储声明，CME FedWatch' },
+      { id: 'n2', fund: 'f1,f2', title: 'AI巨头财报超预期，资本开支上调', date: '2026-08-18', impact: 'pos', duration: 'mid', detail: '英伟达、微软等AI龙头最新财报营收和利润均超预期，并上调全年资本开支指引，显示AI需求持续强劲，带动纳斯达克100指数创历史新高。', related: 'AI产业链，半导体', source: '公司财报，彭博' },
+      { id: 'n3', fund: 'f1,f2', title: '人民币兑美元贬值至7.2，QDII基金受益', date: '2026-08-18', impact: 'pos', duration: 'short', detail: '由于美元走强，人民币兑美元汇率贬至7.2附近。对于QDII基金，汇率收益将增厚以人民币计价的回报，利好持有美元资产的基金。', related: '汇率，QDII', source: '中国外汇交易中心' },
+      { id: 'n4', fund: 'f3', title: '新兴市场资金流入创三个月新高', date: '2026-08-18', impact: 'pos', duration: 'mid', detail: '国际金融协会（IIF）数据显示，8月前两周新兴市场股票和债券市场吸引资金流入达120亿美元，创三个月新高，主要受美联储降息预期和估值吸引。', related: 'MSCI新兴市场指数，资金流', source: 'IIF报告' },
+      { id: 'n5', fund: 'f3', title: '印度和东南亚市场表现强劲，带动新兴市场指数', date: '2026-08-18', impact: 'pos', duration: 'mid', detail: '印度Sensex指数和东南亚主要股指近期持续上涨，受益于经济强劲增长和外资流入，推动MSCI新兴市场指数本月上涨5%。', related: '印度股市，东南亚', source: '路透社' },
+      { id: 'n6', fund: 'f4', title: '中国信创产业政策加码，国产替代加速', date: '2026-08-18', impact: 'pos', duration: 'mid', detail: '国务院发布新政策，加大对信息技术应用创新（信创）产业的支持力度，要求关键行业在2027年前实现核心系统国产化替代，利好国内TMT企业。', related: '信创，国产软件', source: '国务院文件' },
+      { id: 'n7', fund: 'f4', title: '中国7月经济数据超预期，消费电子回暖', date: '2026-08-18', impact: 'pos', duration: 'short', detail: '中国7月社会消费品零售总额同比增长5.5%，超预期，智能手机出货量同比增长8%，显示消费电子需求回暖，利好信息产业基金。', related: '消费电子，经济数据', source: '国家统计局' },
+      { id: 'n8', fund: 'f1,f2,f3', title: '全球科技股估值偏高，波动风险积聚', date: '2026-08-18', impact: 'neg', duration: 'short', detail: '纳斯达克100指数市盈率已接近30倍，处于历史高位，新兴市场也面临美联储政策不确定性，短期回调风险加大，需警惕市场波动。', related: '估值，风险', source: '彭博估值数据' }
     ];
 
     function renderFinNews() {
@@ -3361,7 +3361,7 @@ window.addEventListener('error', function(e) {
       }
       if (codes.length === 0) return;
       var srcEl = document.getElementById('fin-data-source');
-      if (srcEl) srcEl.textContent = '数据来源：东方财富 API 实时拉取 | AI 分析更新：2026-08-17 21:33';
+      if (srcEl) srcEl.textContent = '数据来源：东方财富 API 实时拉取 | AI 分析更新：2026-08-18 21:35';
       var refreshBtn = document.querySelector('.fin-refresh-btn');
       if (refreshBtn) { refreshBtn.textContent = '刷新中...'; refreshBtn.disabled = true; }
       var apiUrl = 'https://fundmobapi.eastmoney.com/FundMNewApi/FundMNFInfo?pageIndex=1&pageSize=20&plat=Android&appType=ttjj&product=EFund&Version=1&deviceid=atlas&Ession=&Fcodes=' + codes.join(',');
